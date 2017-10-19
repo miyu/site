@@ -1,0 +1,146 @@
+@import url('./meyerreset2.scss');
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+$headerFontScale: 0.8;
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1;  }
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    h1 {
+        font-weight: 700;
+    }
+}
+
+.intro {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    color: #FFFFFF;
+    overflow: hidden;
+    font-size: 1vw * $headerFontScale;
+
+    header {
+        padding-left: 5%;
+        padding-top: 5%;
+        opacity: 0.8;
+
+
+        h1 {
+            font-size: 8em;
+            display: inline;
+            margin-right: 0.15em;
+        }
+
+        h2 {
+            font-size: 4em;
+            display: inline;
+            min-width: 50vw;
+        }
+
+        .link-list {
+            margin-left: 0.15em;
+
+            li {
+                display: inline-block;
+                margin-top: 0.3em;
+                margin-right: 0.5em;
+                font-size: 3em;
+            }
+        }
+
+        .typed-cursor {
+            opacity: 1;
+            animation: blink 2s infinite;
+        }
+
+        a {
+            text-decoration: none;
+            margin: 0 -0.2em;
+            padding: 0 0.2em;
+            opacity: 0.9;
+
+            &:hover {
+                border-bottom: solid 0.1em rgba(255, 255, 255, 0.8);
+                opacity: 1;
+            }
+
+            &:visited {
+                color: inherit;
+            }
+        }
+    }
+
+    nav.blog-post-list {
+        position: absolute;
+        left: 5vw;
+        bottom: 4vw;
+
+        h1 {
+            font-size: 4em;
+            opacity: 0.8;
+        }
+
+        li {
+            display: block;
+            margin-left: 0.05em;
+            padding-top: 0.3em;
+            font-size: 2.5em;
+        }
+
+        a {
+            opacity: 0.7;
+            text-decoration: none;
+
+            &:hover {
+                opacity: 0.9;
+                text-decoration: underline;
+            }
+
+            &:visited {
+                color: inherit;
+            }
+        }
+    }
+
+    aside {
+        position: absolute;
+        right: 5vw;
+        bottom: 4vw;
+        font-size: 2em;
+        opacity: 0.3;
+    }
+}
+
+.blog {
+    min-height: 100vh;
+
+    header, section {
+        section {
+            margin: 0 5vw;
+        }
+    }
+
+    header {
+        margin-top: 15vh;
+
+        h1 {
+            font-size: 2em;
+        }
+    }
+
+
+}
+
+.render-view {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1000;
+}
