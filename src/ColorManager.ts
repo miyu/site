@@ -13,6 +13,8 @@ const swipeTime = 0.1;
 export class ColorManager {
     private s: ColorScheme[] = [];
     private t: number = 0;
+    private lastForegroundColor = '';
+    private lastBackgroundColor = '';
 
     constructor (private currentColorScheme: ColorScheme) {}
 
@@ -26,14 +28,22 @@ export class ColorManager {
         }
         this.t = tNext;
 
+        let backgroundColor: string;
         if (this.s.length === 0) {
-            window.document.body.style.background = this.currentColorScheme.compute(1);
+            backgroundColor = this.currentColorScheme.compute(1);
         } else {
             const newPercent = this.t / swipeTime;
-            const bgString = this.currentColorScheme.compute(1 - newPercent) + ', ' + this.s[0].compute(1);
-            window.document.body.style.background = bgString;
+            backgroundColor = this.currentColorScheme.compute(1 - newPercent) + ', ' + this.s[0].compute(1);
         }
-        window.document.body.style.color = this.computeForegroundColor(1);
+        let foregroundColor = this.computeForegroundColor(1);
+        if (backgroundColor !== this.lastBackgroundColor) {
+            window.document.body.style.background = backgroundColor;
+            this.lastBackgroundColor = backgroundColor;
+        }
+        if (foregroundColor !== this.lastForegroundColor) {
+            window.document.body.style.color = foregroundColor;
+            this.lastForegroundColor = foregroundColor;
+        }
     }
 
     computeForegroundColor(alpha: any) {

@@ -50,7 +50,8 @@ export class GraphDemo {
     render(dt: number, t: number) {
         const screenRect = e.getScreenRect();
         e.clear();
-        
+        e.setCompositeOperation('hard-light');
+
         const oscillatePoint = (world: Point3): Point3 => {
             const oscillate = 2;
             return [
@@ -91,7 +92,13 @@ export class GraphDemo {
         const screenRects = oscillatedPoints.map(pointToScreenRect);
         const alphas = oscillatedPoints.map(p => Math.pow(pointToScale(p), 2) * 0.38 + 0.02);
 
+        const renderedEdges: {[x: number]: boolean} = {};
         const renderEdge = (i: number, j: number) => {
+            const n1 = i * (this.points.length * this.points.length) + j;
+            const n2 = j * (this.points.length * this.points.length) + i;
+            if (renderedEdges[n1] || renderedEdges[n2]) return;
+            renderedEdges[n1] = renderedEdges[n2] = true;
+
             const p1 = screenPoints[i];
             const p2 = screenPoints[j];
             const r1 = screenRects[i];
@@ -105,9 +112,9 @@ export class GraphDemo {
                 e.sub(p2, perp2),
                 e.add(p2, perp2)
             ];
-            e.setCompositeOperation('hard-light');
-            const stroke = e.createLinearGradient(p1, p2, `rgba(255, 255, 255, ${alphas[i]})`, `rgba(255, 255, 255, ${alphas[j]})`);
+            const stroke = e.createLinearGradient(p1, p2, `rgba(255, 255, 255, ${alphas[i] * 2})`, `rgba(255, 255, 255, ${alphas[j] * 2})`);
             e.fillPoly(stroke, poly);
+//            e.fillPoly('#FFFFFF', poly);
         }
 
         const hull = qh(this.points);
@@ -132,19 +139,23 @@ export class GraphDemo {
 
             const alpha = t > 1 ? 0 : e.lerp(0, 0.08, t);
             const highlightTriangle = hull[i].map(ind => screenPoints[ind]);
-            e.fillPoly(`rgba(255, 255, 255, ${alpha})`, highlightTriangle);
+             e.fillPoly(`rgba(255, 255, 255, ${alpha})`, highlightTriangle);
             return [i, t - dt];
         });
 
 //        e.setCompositeOperation('source-over');
 //        screenRects.forEach(rect => e.fillEllipse(bg, rect));
 
-        e.setCompositeOperation('hard-light');
-        e.zip(screenRects, alphas, (rect: Rect, alpha: number) => e.fillEllipse(`rgba(255, 255, 255, 255)`, rect));
-
-        e.zip(e.enumerate(screenPoints), screenRects, ([i, p], rect: Rect) => {
+        e.activeContext.fillStyle = '#FFFFFF';
+        e.activeContext.beginPath();
+        e.zip(screenRects, alphas, (rect: Rect, alpha: number) => {
+            const r = rect.width / 2;
+            e.activeContext.ellipse(rect.x + r, rect.y + r, r, r, 0, 0, 2 * Math.PI);
+            e.activeContext.closePath();
         });
-//
+        e.activeContext.fill();
+//        e.zip(screenRects, alphas, (rect: Rect, alpha: number) => e.fillEllipse(`rgba(255, 255, 255, 255)`, rect));
+
 //        e.swapActiveRenderContext(screenContext);
 //        e.setCompositeOperation('source-over');
 //        e.clear('#FFFFFF');

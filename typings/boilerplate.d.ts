@@ -15,6 +15,7 @@ declare global {
 
     interface BoilerplateEngine {
         displayCanvas: HTMLCanvasElement;
+        activeContext: CanvasRenderingContext2D;
 
         init (width: number, height: number, tickRate: number): void;
         setDisplaySize (width: number, height: number): void;
