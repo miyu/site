@@ -22,6 +22,7 @@ body {
     height: 100%;
     overflow: hidden;
     font-size: 1vw * $headerFontScale;
+    z-index: 2;
 
     header {
         padding-left: 5%;
@@ -37,8 +38,8 @@ body {
 
         h2 {
             font-size: 4em;
-            display: inline;
-            min-width: 50vw;
+            display: inline-block;
+            min-width: 40vw;
         }
 
         .link-list {
