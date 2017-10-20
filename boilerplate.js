@@ -13,6 +13,7 @@ global.displaySizedRenderTargets = [];
 global.measuredTickExecutionTimes = [];
 global.measuredRenderExecutionTimes = [];
 global.measuredRenderIntervals = [];
+global.lastCompositeOperation = '';
 
 // ArrowLeft, ArrowRight, ArrowUp, ArrowDown
 global.Key = {
@@ -512,7 +513,8 @@ function createLinearGradient(p1, p2, c1, c2) {
 }
 
 function setCompositeOperation(val) {
-    global.activeContext.globalCompositeOperation = val || 'source-over';
+    if (global.lastCompositeOperation === val) return;
+    global.activeContext.globalCompositeOperation = global.lastCompositeOperation = val || 'source-over';
 }
 
 function computeMeanTickExecutionTime() {
