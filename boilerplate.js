@@ -10,6 +10,9 @@ global.tickRate = -1;
 global.ticksExecuted = 0;
 global.tickEnterHooks = [];
 global.displaySizedRenderTargets = [];
+global.measuredTickExecutionTimes = [];
+global.measuredRenderExecutionTimes = [];
+global.measuredRenderIntervals = [];
 
 // ArrowLeft, ArrowRight, ArrowUp, ArrowDown
 global.Key = {
@@ -86,20 +89,35 @@ function renderStep() {
     var lastT = (global.lastRenderTime - global.startTime) / 1000;
 
     const ticksDesired = Math.floor(t * global.tickRate);
-    for (let i = 0; global.ticksExecuted < ticksDesired; i++, global.ticksExecuted++) {
+    let i = 0;
+    for (; global.ticksExecuted < ticksDesired; i++, global.ticksExecuted++) {
         const dt = 1 / global.tickRate;
         tickEnterHooks.forEach(hook => hook(dt, lastT + i * dt));
 
         const tcur = (new Date() - now) / 1000;
-        if (tcur > 1000) {
+        if (tcur > 1) {
+            console.warn(`Early break out of tick loop: ${i} done, ${ticksDesired - global.ticksExecuted} remaining`);
             global.ticksExecuted = ticksDesired;
             break;
         }
     }
 
-    global.lastRenderTime = now;
+    const tStepsComplete = new Date();
     frameEnterHooks.forEach(hook => hook(dt, t));
+    const tRenderComplete = new Date();
+
+    global.lastRenderTime = now;
     window.requestAnimationFrame(renderStep);
+
+    // perf counters
+    global.measuredTickExecutionTimes.push([i, (tStepsComplete - now) / 1000]);
+    global.measuredRenderExecutionTimes.push((tRenderComplete - tStepsComplete) / 1000);
+    global.measuredRenderIntervals.push(dt);
+    if (global.measuredRenderExecutionTimes.length > 30) {
+        global.measuredTickExecutionTimes.shift();
+        global.measuredRenderExecutionTimes.shift();
+        global.measuredRenderIntervals.shift();
+    }
 }
 
 function onFrameEnter(handler) {
@@ -473,6 +491,19 @@ function arrayify(val) {
     return val instanceof Array ? val : [val];
 }
 
+function sum(arr) {
+    return arr.aggregate((acc, val) => acc + val, 0);
+}
+
+function avg(arr) {
+    return sum(arr) / arr.length;
+}
+
+function weightedAvg(arr) {
+    const agg = arr.reduce(([c1, v1], [c2, v2]) => [c1 + c2, v1 + v2], [0, 0]);
+    return agg[1] / agg[0];
+}
+
 function createLinearGradient(p1, p2, c1, c2) {
     const gradient = global.activeContext.createLinearGradient(p1[0], p1[1], p2[0], p2[1]);
     gradient.addColorStop(0, c1);
@@ -482,4 +513,25 @@ function createLinearGradient(p1, p2, c1, c2) {
 
 function setCompositeOperation(val) {
     global.activeContext.globalCompositeOperation = val || 'source-over';
+}
+
+function computeMeanTickExecutionTime() {
+    if (global.measuredTickExecutionTimes.length < 3) {
+        return -1;
+    }
+    return weightedAvg(global.measuredTickExecutionTimes);
+}
+
+function computeMeanRenderExecutionTime() {
+    if (global.measuredRenderExecutionTimes.length < 3) {
+        return -1;
+    }
+    return avg(global.measuredRenderExecutionTimes);
+}
+
+function computeMeanRenderInterval() {
+    if (global.measuredRenderIntervals.length < 3) {
+        return -1;
+    }
+    return avg(global.measuredRenderIntervals);
 }
