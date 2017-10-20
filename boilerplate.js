@@ -262,7 +262,7 @@ lerp = (a, b, t) => a instanceof Array ? zip(a, b, (va, vb) => lerpHelper(va, vb
 rotate = (p, theta) => [Math.cos(theta) * p[0] - Math.sin(theta) * p[1], Math.sin(theta) * p[0] + Math.cos(theta) * p[1]];
 sqdist = (a, b) => sqnorm2d(sub(a, b));
 dist = (a, b) => Math.sqrt(sqdist(a, b));
-atan2 = ([p1, p2]) => Math.atan2(p2[1] - p1[1], p2[0] - p1[0]);
+atan2 = ([x, y]) => Math.atan2(y, x);
 perp = ([x, y]) => [-y, x];
 normalize = v => div(v, norm2d(v));
 flip = ([x, y]) => [-x, -y];
