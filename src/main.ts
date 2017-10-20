@@ -67,6 +67,13 @@ function main() {
         updateBlueGradientBackground();
         colorManager.render(dt);
         demo.render(dt, t);
+
+        const ctx = engine.displayCanvas.getContext('2d');
+        ctx.fillStyle = colorManager.computeForegroundColor(1);
+        ctx.fillText(`MTE ${engine.computeMeanTickExecutionTime()}ms`, 0, 100);
+        ctx.fillText(`MRE ${engine.computeMeanRenderExecutionTime()}ms `, 0, 110);
+        ctx.fillText(`MRI ${engine.computeMeanRenderInterval()}ms`, 0, 120);
+        ctx.fillText(`FPS ~${1 / engine.computeMeanRenderInterval()}`, 0, 130);
     }
 
     function handleResize() {
