@@ -20,7 +20,6 @@ body {
     position: relative;
     width: 100%;
     height: 100%;
-    color: #FFFFFF;
     overflow: hidden;
     font-size: 1vw * $headerFontScale;
 
@@ -59,14 +58,26 @@ body {
         }
 
         a {
+            position: relative;
             text-decoration: none;
             margin: 0 -0.2em;
             padding: 0 0.2em;
             opacity: 0.9;
 
             &:hover {
-                border-bottom: solid 0.1em rgba(255, 255, 255, 0.8);
+                //border-bottom: solid 0.1em;
                 opacity: 1;
+
+                &::after {
+                    display: block;
+                    position: absolute;
+                    top: 100%;
+                    left: 0.2em;
+                    right: 0.2em;
+                    content: "";
+                    height: 0.1em;
+                    background-color: currentColor;
+                }
             }
 
             &:visited {

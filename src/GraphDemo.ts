@@ -48,15 +48,9 @@ export class GraphDemo {
     }
 
     render(dt: number, t: number) {
-//        const screenContext = e.swapActiveRenderContext(this.offscreenRenderContext);
-
         const screenRect = e.getScreenRect();
-        const e1 = [0, screenRect.y * 2 / 5];
-        const e2 = [screenRect.x + screenRect.width, screenRect.y * 3 / 5];
-        const bg = e.createLinearGradient(e1, e2, 'rgba(77, 154, 184, 1)', 'rgba(70, 58, 132, 1)');
-        e.setCompositeOperation('source-over');
-        e.fillRect(bg, screenRect);
-
+        e.clear();
+        
         const oscillatePoint = (world: Point3): Point3 => {
             const oscillate = 2;
             return [
