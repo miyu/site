@@ -105,7 +105,6 @@ declare global {
         computeMeanRenderExecutionTime(): number;
         computeMeanRenderInterval(): number;
     }
-}
 
     interface Window extends BoilerplateEngine {}
 
