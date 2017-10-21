@@ -1,7 +1,7 @@
 @import url('./meyerreset2.scss');
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
-$headerFontScale: 0.8;
+$introFontSize: 0.8vw;
 
 @keyframes blink {
     0% { opacity: 1; }
@@ -17,18 +17,21 @@ body {
 }
 
 .intro {
-    position: relative;
+    position: absolute;
     width: 100%;
     height: 100%;
-    overflow: hidden;
-    font-size: 1vw * $headerFontScale;
+
+    display: flex;
+    flex-direction: column;
     z-index: 2;
+    font-size: $introFontSize;
 
     header {
-        padding-left: 5%;
-        padding-top: 5%;
+        flex: auto;
+        order: 1;
+        padding-left: 5vw;
+        padding-top: 5vw;
         opacity: 0.8;
-
 
         h1 {
             font-size: 8em;
@@ -88,9 +91,10 @@ body {
     }
 
     nav.blog-post-list {
-        position: absolute;
-        left: 5vw;
-        bottom: 4vw;
+        flex: none;
+        order: 3;
+        padding-left: 5vw;
+        padding-bottom: 4vw;
 
         h1 {
             font-size: 4em;
@@ -121,8 +125,10 @@ body {
 
     aside {
         position: absolute;
-        right: 5vw;
-        bottom: 4vw;
+        right: 0;
+        bottom: 0;
+        padding-right: 5vw;
+        padding-bottom: 4vw;
         font-size: 2em;
         opacity: 0.3;
     }
@@ -155,4 +161,30 @@ body {
     width: 100%;
     height: 100%;
     z-index: 1;
+}
+
+@media screen and (max-aspect-ratio: 1/1) {
+    .intro {
+        font-size: 1.3 * $introFontSize;
+
+        aside {
+            position: static;
+            flex: none;
+            text-align: center;
+            padding-bottom: 8vw;
+            padding-right: 0;
+            font-size: 2.5em;
+            order: 2;
+            opacity: 0.7;
+
+            &:before {
+                display: inline;
+                content: 'Visualized:';
+            }
+        }
+    }
+
+    nav.blog-post-list {
+        font-size: 1.3em;
+    }
 }

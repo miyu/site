@@ -107,7 +107,9 @@ declare global {
         computeMeanRenderInterval(): number;
     }
 
-    interface Window extends BoilerplateEngine {}
+    interface Window extends BoilerplateEngine {
+        Key: Key;
+    }
 
     interface Key {
         isDown(key: string | number): boolean;

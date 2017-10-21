@@ -15,6 +15,8 @@ colorManager.push(blueGradientColorScheme);
 import '../style.scss';
 window.addEventListener('load', main);
 
+const Key: Key = window.Key;
+
 function main() {
     const demo = new GraphDemo();
     engine.init(1280, 720, 60);
@@ -68,17 +70,22 @@ function main() {
         colorManager.render(dt);
         demo.render(dt, t);
 
-        const ctx = engine.displayCanvas.getContext('2d');
-        ctx.fillStyle = colorManager.computeForegroundColor(1);
-        ctx.fillText(`MTE ${1000 * engine.computeMeanTickExecutionTime()}ms`, 0, 100);
-        ctx.fillText(`MRE ${1000 * engine.computeMeanRenderExecutionTime()}ms `, 0, 110);
-        ctx.fillText(`MRI ${1000 * engine.computeMeanRenderInterval()}ms`, 0, 120);
-        ctx.fillText(`FPS ~${1 / engine.computeMeanRenderInterval()}`, 0, 130);
-        ctx.fillText(`RES ${engine.getScreenRect().width} x ${engine.getScreenRect().height}`, 0, 140);
+        if (Key.isDown('z')) {
+            const ctx = engine.displayCanvas.getContext('2d');
+            ctx.fillStyle = colorManager.computeForegroundColor(1);
+            ctx.fillText(`MTE ${1000 * engine.computeMeanTickExecutionTime()}ms`, 0, 100);
+            ctx.fillText(`MRE ${1000 * engine.computeMeanRenderExecutionTime()}ms `, 0, 110);
+            ctx.fillText(`MRI ${1000 * engine.computeMeanRenderInterval()}ms`, 0, 120);
+            ctx.fillText(`FPS ~${1 / engine.computeMeanRenderInterval()}`, 0, 130);
+            ctx.fillText(`RES ${engine.getScreenRect().width} x ${engine.getScreenRect().height}`, 0, 140);
+        }
     }
 
     function handleResize() {
         engine.setDisplaySize(document.body.clientWidth, document.body.clientHeight);
+        engine.displayCanvas.style.width = document.body.clientWidth + 'px';
+        engine.displayCanvas.style.height = document.body.clientHeight + 'px';
+//        engine.activeContext.imageSmoothingEnabled = false;
     }
 
     function updateBlueGradientBackground() {

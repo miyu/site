@@ -4,6 +4,7 @@ type Point3 = number[];
 const e: BoilerplateEngine = window;
 const enumerate = e.enumerate;
 const zoom = 1.5;
+const Key: Key = window.Key;
 
 export class GraphDemo {
     starts: Point3[];
@@ -15,15 +16,18 @@ export class GraphDemo {
     offscreenRenderContext: CanvasRenderingContext2D;
 
     constructor() {
+        this.offscreenRenderContext = e.createDisplaySizedRenderContext();
+        this.highlights = enumerate(3).map(i => [i, 0]);
+        this.resetPoints();
+    }
+
+    resetPoints () {
         // world is unit cube
         const n = 24;
         this.starts = enumerate(n).map(() => this.randomSpherePoint(0, 0, 0, 1));
         this.points = this.starts.map(p => p.map(v => v));
         this.dest1 = enumerate(n).map(() => this.randomSpherePoint(0, 0, 0, 1));
         this.dest2 = enumerate(n).map(() => this.randomSpherePoint(0, 0, 0, 1));
-
-        this.offscreenRenderContext = e.createDisplaySizedRenderContext();
-        this.highlights = enumerate(3).map(i => [i, 0]);
     }
 
     tick (dt: number, t: number) {
@@ -48,6 +52,8 @@ export class GraphDemo {
     }
 
     render(dt: number, t: number) {
+        if (Key.isDown('r') && (t % 0.7) < 0.1) this.resetPoints();
+
         const screenRect = e.getScreenRect();
         e.clear();
         e.setCompositeOperation('hard-light');
@@ -114,10 +120,11 @@ export class GraphDemo {
             ];
             const stroke = e.createLinearGradient(p1, p2, `rgba(255, 255, 255, ${alphas[i] * 2})`, `rgba(255, 255, 255, ${alphas[j] * 2})`);
             e.fillPoly(stroke, poly);
+//            e.drawLine(stroke, p1, p2);
 //            e.fillPoly('#FFFFFF', poly);
         }
 
-        const hull = qh(this.points);
+        const hull = qh(oscillatedPoints);
 //        for (var i = 0; i < oscillatedPoints.length; i++) {
 //            for (var j = i + 1; j < oscillatedPoints.length; j++) {
 //                if (e.dist(this.points[i], this.points[j]) > 1) continue;
