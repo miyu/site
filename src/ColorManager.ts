@@ -49,7 +49,8 @@ export class ColorManager {
     computeForegroundColor(alpha: any) {
         const color = this.s.length === 0
             ? this.currentColorScheme.foreground
-            : engine.lerp(this.currentColorScheme.foreground, this.s[0].foreground, 1 - this.t / swipeTime);
+            : engine.lerp(this.currentColorScheme.foreground, this.s[0].foreground, 1 - this.t / swipeTime)
+                    .map(v => Math.round(v));
         return `rgba(${color.join(', ')}, ${alpha})`;
     }
 

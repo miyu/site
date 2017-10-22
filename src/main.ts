@@ -3,7 +3,7 @@ import Typed from 'typed.js';
 import { GraphDemo } from './GraphDemo';
 import { ColorScheme, ColorManager } from './ColorManager';
 const engine: BoilerplateEngine = window;
-const whiteColorScheme = new ColorScheme([0, 0, 0], 'linear-gradient(0deg, rgba(255, 255, 255, $a1) 0%, rgba(255, 255, 255, $a2) 100%)', v => v, v => v);
+const whiteColorScheme = new ColorScheme([22, 22, 22], 'linear-gradient(0deg, rgba(255, 255, 255, $a1) 0%, rgba(255, 255, 255, $a2) 100%)', v => v, v => v);
 const blackColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(0, 0, 0, $a1) 0%, rgba(0, 0, 0, $a2) 100%)', v => v, v => v);
 const blueGradientColorScheme = new ColorScheme([255, 255, 255], 'dummy, replaced on render', v => v, v => v);
 const darkBlueGradientColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(52, 73, 94, $a1) 0%, rgba(44, 62, 80, $a2) 100%)', v => v, v => v);
@@ -18,7 +18,7 @@ window.addEventListener('load', main);
 const Key: Key = window.Key;
 
 function main() {
-    const demo = new GraphDemo();
+    const demo = new GraphDemo(colorManager);
     engine.init(1280, 720, 60);
     engine.onTickEnter(tick);
     engine.onFrameEnter(render);
@@ -63,6 +63,9 @@ function main() {
 
         document.getElementById('linkedin-link').addEventListener('mouseover', () => colorManager.push(darkBlueGradientColorScheme));
         document.getElementById('linkedin-link').addEventListener('mouseleave', () => colorManager.push(blueGradientColorScheme));
+
+        document.getElementsByClassName('blog-post-list')[0].addEventListener('mouseover', () => colorManager.push(whiteColorScheme));
+        document.getElementsByClassName('blog-post-list')[0].addEventListener('mouseleave', () => colorManager.push(blueGradientColorScheme));
     }
 
     function render(dt: number, t: number) {

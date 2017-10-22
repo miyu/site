@@ -1,3 +1,4 @@
+import { ColorManager } from './ColorManager';
 import qh from 'quickhull3d';
 
 type Point3 = number[];
@@ -15,7 +16,7 @@ export class GraphDemo {
 
     offscreenRenderContext: CanvasRenderingContext2D;
 
-    constructor() {
+    constructor(private colorManager: ColorManager) {
         this.offscreenRenderContext = e.createDisplaySizedRenderContext();
         this.highlights = enumerate(3).map(i => [i, 0]);
         this.resetPoints();
@@ -118,7 +119,9 @@ export class GraphDemo {
                 e.sub(p2, perp2),
                 e.add(p2, perp2)
             ];
-            const stroke = e.createLinearGradient(p1, p2, `rgba(255, 255, 255, ${alphas[i] * 2})`, `rgba(255, 255, 255, ${alphas[j] * 2})`);
+
+            
+            const stroke = e.createLinearGradient(p1, p2, this.colorManager.computeForegroundColor(alphas[i] * 2), this.colorManager.computeForegroundColor(alphas[j] * 2));
             e.fillPoly(stroke, poly);
 //            e.drawLine(stroke, p1, p2);
 //            e.fillPoly('#FFFFFF', poly);
@@ -146,14 +149,14 @@ export class GraphDemo {
 
             const alpha = t > 1 ? 0 : e.lerp(0, 0.08, t);
             const highlightTriangle = hull[i].map(ind => screenPoints[ind]);
-             e.fillPoly(`rgba(255, 255, 255, ${alpha})`, highlightTriangle);
+             e.fillPoly(this.colorManager.computeForegroundColor(alpha), highlightTriangle);
             return [i, t - dt];
         });
 
 //        e.setCompositeOperation('source-over');
 //        screenRects.forEach(rect => e.fillEllipse(bg, rect));
 
-        e.activeContext.fillStyle = '#FFFFFF';
+        e.activeContext.fillStyle = this.colorManager.computeForegroundColor(1);
         e.activeContext.beginPath();
         e.zip(screenRects, alphas, (rect: Rect, alpha: number) => {
             const r = rect.width / 2;
