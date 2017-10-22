@@ -8,6 +8,14 @@ export class ColorScheme {
     }
 }
 
+export class ColorSchemes {
+    public static whiteColorScheme = new ColorScheme([22, 22, 22], 'linear-gradient(0deg, rgba(255, 255, 255, $a1) 0%, rgba(255, 255, 255, $a2) 100%)', v => v, v => v);
+    public static blackColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(0, 0, 0, $a1) 0%, rgba(0, 0, 0, $a2) 100%)', v => v, v => v);
+    public static darkBlueGradientColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(52, 73, 94, $a1) 0%, rgba(44, 62, 80, $a2) 100%)', v => v, v => v);
+    public static greenGradientColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(46, 204, 113, $a1) 0%, rgba(39, 174, 96, $a2) 100%)', v => v, v => v);
+    public static purpleGradientColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(155, 89, 182, $a1) 0%, rgba(142, 68, 173, $a2) 100%)', v => v, v => v);
+}
+
 const swipeTime = 0.1;
 
 export class ColorManager {

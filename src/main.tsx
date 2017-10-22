@@ -1,15 +1,10 @@
 import Typed from 'typed.js';
 
 import { GraphDemo } from './GraphDemo';
-import { ColorScheme, ColorManager } from './ColorManager';
+import { ColorScheme, ColorSchemes, ColorManager } from './ColorManager';
 const engine: BoilerplateEngine = window;
-const whiteColorScheme = new ColorScheme([22, 22, 22], 'linear-gradient(0deg, rgba(255, 255, 255, $a1) 0%, rgba(255, 255, 255, $a2) 100%)', v => v, v => v);
-const blackColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(0, 0, 0, $a1) 0%, rgba(0, 0, 0, $a2) 100%)', v => v, v => v);
 const blueGradientColorScheme = new ColorScheme([255, 255, 255], 'dummy, replaced on render', v => v, v => v);
-const darkBlueGradientColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(52, 73, 94, $a1) 0%, rgba(44, 62, 80, $a2) 100%)', v => v, v => v);
-const greenGradientColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(46, 204, 113, $a1) 0%, rgba(39, 174, 96, $a2) 100%)', v => v, v => v);
-const purpleGradientColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(155, 89, 182, $a1) 0%, rgba(142, 68, 173, $a2) 100%)', v => v, v => v);
-const colorManager = new ColorManager(blackColorScheme);
+const colorManager = new ColorManager(ColorSchemes.blackColorScheme);
 colorManager.push(blueGradientColorScheme);
 
 import '../style.scss';
@@ -40,6 +35,8 @@ function main() {
         handleResize();
         engine.displayCanvas.className = 'render-view';
 
+        console.log(<div></div>);
+
         const throwaway = new Typed('.whoami', {
             strings: [
                 'Software Engineer',
@@ -55,16 +52,16 @@ function main() {
             cursorChar: '|'
         });
 
-        document.getElementById('resume-link').addEventListener('mouseover', () => colorManager.push(purpleGradientColorScheme));
+        document.getElementById('resume-link').addEventListener('mouseover', () => colorManager.push(ColorSchemes.purpleGradientColorScheme));
         document.getElementById('resume-link').addEventListener('mouseleave', () => colorManager.push(blueGradientColorScheme));
 
-        document.getElementById('github-link').addEventListener('mouseover', () => colorManager.push(greenGradientColorScheme));
+        document.getElementById('github-link').addEventListener('mouseover', () => colorManager.push(ColorSchemes.greenGradientColorScheme));
         document.getElementById('github-link').addEventListener('mouseleave', () => colorManager.push(blueGradientColorScheme));
 
-        document.getElementById('linkedin-link').addEventListener('mouseover', () => colorManager.push(darkBlueGradientColorScheme));
+        document.getElementById('linkedin-link').addEventListener('mouseover', () => colorManager.push(ColorSchemes.darkBlueGradientColorScheme));
         document.getElementById('linkedin-link').addEventListener('mouseleave', () => colorManager.push(blueGradientColorScheme));
 
-        document.getElementsByClassName('blog-post-list')[0].addEventListener('mouseover', () => colorManager.push(whiteColorScheme));
+        document.getElementsByClassName('blog-post-list')[0].addEventListener('mouseover', () => colorManager.push(ColorSchemes.whiteColorScheme));
         document.getElementsByClassName('blog-post-list')[0].addEventListener('mouseleave', () => colorManager.push(blueGradientColorScheme));
     }
 

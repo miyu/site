@@ -2,7 +2,7 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: './src/main.ts',
+    entry: './src/main.tsx',
     devtool: 'inline-source-map',
     module: {
         rules: [
@@ -33,7 +33,8 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin([
             { from: 'index.html' },
-            { from: 'dependencies/boilerplate.js' }
+            { from: 'dependencies/boilerplate.js' },
+            { from: 'dependencies/tsJsxSupport.js' }
         ])
     ]
 };
