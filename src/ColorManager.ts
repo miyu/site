@@ -9,6 +9,9 @@ export class ColorScheme {
 }
 
 export class ColorSchemes {
+    // Probably needs a special name because it's a special snowflake color scheme.
+    public static blueGradientColorScheme = new ColorScheme([255, 255, 255], 'dummy, replaced on render', v => v, v => v);
+
     public static whiteColorScheme = new ColorScheme([22, 22, 22], 'linear-gradient(0deg, rgba(255, 255, 255, $a1) 0%, rgba(255, 255, 255, $a2) 100%)', v => v, v => v);
     public static blackColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(0, 0, 0, $a1) 0%, rgba(0, 0, 0, $a2) 100%)', v => v, v => v);
     public static darkBlueGradientColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(52, 73, 94, $a1) 0%, rgba(44, 62, 80, $a2) 100%)', v => v, v => v);
@@ -16,10 +19,10 @@ export class ColorSchemes {
     public static purpleGradientColorScheme = new ColorScheme([255, 255, 255], 'linear-gradient(0deg, rgba(155, 89, 182, $a1) 0%, rgba(142, 68, 173, $a2) 100%)', v => v, v => v);
 }
 
-const swipeTime = 0.1;
+const defaultTransitionInterval = 0.1;
 
 export class ColorManager {
-    private s: ColorScheme[] = [];
+    private s: {scheme: ColorScheme, interval: number}[] = [];
     private t: number = 0;
     private lastForegroundColor = '';
     private lastBackgroundColor = '';
@@ -27,28 +30,30 @@ export class ColorManager {
     constructor(private currentColorScheme: ColorScheme, private defaultColorScheme: ColorScheme) {}
 
     render(dt: number) {
-        let tNext = this.t + dt;
-        while (tNext > swipeTime) {
-            tNext -= swipeTime;
-            if (this.s.length !== 0) {
-                this.currentColorScheme = this.s.shift();
+        if (this.s.length !== 0) {
+            this.t += dt;
+            while (this.s.length !== 0 && this.t >= this.s[0].interval) {
+                const completeTransition = this.s.shift();
+                this.currentColorScheme = completeTransition.scheme;
+                this.t -= completeTransition.interval;
+            }
+            if (this.s.length === 0) {
+                this.t = 0;
             }
         }
-        this.t = tNext;
 
-        let backgroundColor: string;
-        if (this.s.length === 0) {
-            backgroundColor = this.currentColorScheme.compute(1);
-        } else {
-            const newPercent = this.t / swipeTime;
-            backgroundColor = this.currentColorScheme.compute(1 - newPercent) + ', ' + this.s[0].compute(1);
-        }
+        let backgroundColor: string = this.s.length === 0
+            ? this.currentColorScheme.compute(1)
+            : this.currentColorScheme.compute(1 - this.t / this.s[0].interval) + ', ' + this.s[0].scheme.compute(1);;
         let foregroundColor = this.computeForegroundColor(1);
+
         if (backgroundColor !== this.lastBackgroundColor) {
             window.document.body.style.background = backgroundColor;
             this.lastBackgroundColor = backgroundColor;
         }
         if (foregroundColor !== this.lastForegroundColor) {
+            console.log(foregroundColor);
+
             window.document.body.style.color = foregroundColor;
             this.lastForegroundColor = foregroundColor;
         }
@@ -57,12 +62,12 @@ export class ColorManager {
     computeForegroundColor(alpha: any) {
         const color = this.s.length === 0
             ? this.currentColorScheme.foreground
-            : engine.lerp(this.currentColorScheme.foreground, this.s[0].foreground, 1 - this.t / swipeTime)
+            : engine.lerp(this.currentColorScheme.foreground, this.s[0].scheme.foreground, this.t / this.s[0].interval)
                     .map(v => Math.round(v));
         return `rgba(${color.join(', ')}, ${alpha})`;
     }
 
-    push(bg: ColorScheme) {
+    push(bg: ColorScheme, thres?: number) {
         bg = bg || this.defaultColorScheme;
         if (this.s.length === 0) {
             this.t = 0;
@@ -70,6 +75,14 @@ export class ColorManager {
         while (this.s.length > 1) { // don't allow more than 2 in q (first can be in-transition, second certainly not)
             this.s.pop();
         }
-        this.s.push(bg);
+        this.s.push({ scheme: bg, interval: thres || defaultTransitionInterval });
+    }
+
+    handleResize() {
+        const screenRect = engine.getScreenRect();
+        const e1 = [0, screenRect.y + screenRect.height * 2 / 5];
+        const e2 = [screenRect.x + screenRect.width, screenRect.y + screenRect.height * 3 / 5];
+        const theta = engine.atan2(engine.sub(e2, e1)) + 0.5 * Math.PI;
+        ColorSchemes.blueGradientColorScheme.s = `linear-gradient(${theta * 180 / Math.PI}deg, rgba(77, 154, 184, $a1) -5%, rgba(70, 58, 132, $a2) 95%)`;
     }
 }

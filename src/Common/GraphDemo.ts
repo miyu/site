@@ -1,4 +1,4 @@
-import { ColorManager } from './ColorManager';
+import { ColorManager } from '../ColorManager';
 import qh from 'quickhull3d';
 
 type Point3 = number[];

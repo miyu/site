@@ -1,5 +1,5 @@
 
-import { IPage } from '../foundations';
+import { IPage } from '../Core';
 import { ColorManager, ColorSchemes } from '../ColorManager';
 
 import './style.scss';
@@ -9,7 +9,7 @@ import Typed from 'typed.js';
 export class LandingPage implements IPage {
     constructor (private colorManager: ColorManager) {}
 
-    async fetchContent(): Promise<HTMLElement> {
+    async fetchContentAsync(): Promise<HTMLElement> {
         const resumeLink = <li id="resume-link"><a href='about:blank'>Resume</a></li>;
         const githubLink = <li id="github-link"><a href='about:blank'>GitHub</a></li>;
         const linkedinLink = <li id="linkedin-link"><a href='about:blank'>LinkedIn</a></li>;
