@@ -1,10 +1,8 @@
-import Typed from 'typed.js';
-
-import { GraphDemo } from './GraphDemo';
 import { ColorScheme, ColorSchemes, ColorManager } from './ColorManager';
+
 const engine: BoilerplateEngine = window;
 const blueGradientColorScheme = new ColorScheme([255, 255, 255], 'dummy, replaced on render', v => v, v => v);
-const colorManager = new ColorManager(ColorSchemes.blackColorScheme);
+const colorManager = new ColorManager(ColorSchemes.blackColorScheme, blueGradientColorScheme);
 colorManager.push(blueGradientColorScheme);
 
 import '../style.scss';
@@ -12,9 +10,15 @@ window.addEventListener('load', main);
 
 const Key: Key = window.Key;
 
+import { GraphDemo } from './GraphDemo';
+import { LandingPage } from './Landing/LandingPage';
+
 function main() {
+    const landingPage = new LandingPage(colorManager);
     const demo = new GraphDemo(colorManager);
     engine.init(1280, 720, 60);
+    engine.displayCanvas.className = 'render-view';
+
     engine.onTickEnter(tick);
     engine.onFrameEnter(render);
 
@@ -32,37 +36,13 @@ function main() {
     }
 
     function firstTick() {
-        handleResize();
-        engine.displayCanvas.className = 'render-view';
-
-        console.log(<div></div>);
-
-        const throwaway = new Typed('.whoami', {
-            strings: [
-                'Software Engineer',
-                'UW Seattle CSE \'18',
-                'Builds Games',
-                'Builds Robots',
-                'Software Engineer'
-            ],
-//            strings: ['Software Engineer', 'Student at UW Seattle'],
-            typeSpeed: 50,
-            backSpeed: 20,
-            loop: false,
-            cursorChar: '|'
+        landingPage.fetchContent().then(el => {
+            console.log(el);
+            document.body.appendChild(el);
+            landingPage.mounted();
         });
 
-        document.getElementById('resume-link').addEventListener('mouseover', () => colorManager.push(ColorSchemes.purpleGradientColorScheme));
-        document.getElementById('resume-link').addEventListener('mouseleave', () => colorManager.push(blueGradientColorScheme));
-
-        document.getElementById('github-link').addEventListener('mouseover', () => colorManager.push(ColorSchemes.greenGradientColorScheme));
-        document.getElementById('github-link').addEventListener('mouseleave', () => colorManager.push(blueGradientColorScheme));
-
-        document.getElementById('linkedin-link').addEventListener('mouseover', () => colorManager.push(ColorSchemes.darkBlueGradientColorScheme));
-        document.getElementById('linkedin-link').addEventListener('mouseleave', () => colorManager.push(blueGradientColorScheme));
-
-        document.getElementsByClassName('blog-post-list')[0].addEventListener('mouseover', () => colorManager.push(ColorSchemes.whiteColorScheme));
-        document.getElementsByClassName('blog-post-list')[0].addEventListener('mouseleave', () => colorManager.push(blueGradientColorScheme));
+        handleResize();
     }
 
     function render(dt: number, t: number) {

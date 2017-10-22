@@ -1,8 +1,6 @@
 @import url('./meyerreset2.scss');
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
-$introFontSize: 0.8vw;
-
 @keyframes blink {
     0% { opacity: 1; }
     50% { opacity: 0; }
@@ -13,124 +11,6 @@ body {
     font-family: 'Montserrat', sans-serif;
     h1 {
         font-weight: 700;
-    }
-}
-
-.intro {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-    z-index: 2;
-    font-size: $introFontSize;
-
-    header {
-        flex: auto;
-        order: 1;
-        padding-left: 5vw;
-        padding-top: 5vw;
-        opacity: 0.8;
-
-        h1 {
-            font-size: 8em;
-            display: inline;
-            margin-right: 0.15em;
-        }
-
-        h2 {
-            font-size: 4em;
-            display: inline-block;
-            min-width: 40vw;
-        }
-
-        .link-list {
-            margin-left: 0.15em;
-
-            li {
-                display: inline-block;
-                margin-top: 0.3em;
-                margin-right: 0.5em;
-                font-size: 3em;
-            }
-        }
-
-        .typed-cursor {
-            opacity: 1;
-            animation: blink 2s infinite;
-        }
-
-        a {
-            position: relative;
-            text-decoration: none;
-            margin: 0 -0.2em;
-            padding: 0 0.2em;
-            opacity: 0.9;
-
-            &:hover {
-                //border-bottom: solid 0.1em;
-                opacity: 1;
-
-                &::after {
-                    display: block;
-                    position: absolute;
-                    top: 100%;
-                    left: 0.2em;
-                    right: 0.2em;
-                    content: "";
-                    height: 0.1em;
-                    background-color: currentColor;
-                }
-            }
-
-            &:visited {
-                color: inherit;
-            }
-        }
-    }
-
-    nav.blog-post-list {
-        flex: none;
-        order: 3;
-        padding-left: 5vw;
-        padding-bottom: 4vw;
-
-        h1 {
-            font-size: 4em;
-            opacity: 0.8;
-        }
-
-        li {
-            display: block;
-            margin-left: 0.05em;
-            padding-top: 0.3em;
-            font-size: 2.5em;
-        }
-
-        a {
-            opacity: 0.7;
-            text-decoration: none;
-
-            &:hover {
-                opacity: 0.9;
-                text-decoration: underline;
-            }
-
-            &:visited {
-                color: inherit;
-            }
-        }
-    }
-
-    aside {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        padding-right: 5vw;
-        padding-bottom: 4vw;
-        font-size: 2em;
-        opacity: 0.3;
     }
 }
 
@@ -161,30 +41,4 @@ body {
     width: 100%;
     height: 100%;
     z-index: 1;
-}
-
-@media screen and (max-aspect-ratio: 1/1) {
-    .intro {
-        font-size: 1.3 * $introFontSize;
-
-        aside {
-            position: static;
-            flex: none;
-            text-align: center;
-            padding-bottom: 8vw;
-            padding-right: 0;
-            font-size: 2.5em;
-            order: 2;
-            opacity: 0.7;
-
-            &:before {
-                display: inline;
-                content: 'Visualized:';
-            }
-        }
-    }
-
-    nav.blog-post-list {
-        font-size: 1.3em;
-    }
 }

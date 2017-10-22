@@ -24,7 +24,7 @@ export class ColorManager {
     private lastForegroundColor = '';
     private lastBackgroundColor = '';
 
-    constructor (private currentColorScheme: ColorScheme) {}
+    constructor(private currentColorScheme: ColorScheme, private defaultColorScheme: ColorScheme) {}
 
     render(dt: number) {
         let tNext = this.t + dt;
@@ -63,6 +63,7 @@ export class ColorManager {
     }
 
     push(bg: ColorScheme) {
+        bg = bg || this.defaultColorScheme;
         if (this.s.length === 0) {
             this.t = 0;
         }
