@@ -12,6 +12,15 @@ export type RtsSimulationState = {
 export type RtsRenderConfiguration = {
     renderTransform: (p: Point2) => Point2,
     pathfindingQueries: [Point2, Point2][],
+    agentRadius: number,
+    enableRenderPolyTree?: boolean,
+    enableRenderWaypoints?: boolean,
+    enableRenderBarriers?: boolean,
+    enableRenderVisibilityGraph?: boolean,
+    triangulationStrokeStyle?: StrokeStyle,
+    triangulationFillStyle?: FillStyle,
+    temporaryHoleStrokeStyle?: StrokeStyle,
+    temporaryHoleFillStyle?: FillStyle,
 }
 
 export class RtsSimulationRenderer {
@@ -19,24 +28,11 @@ export class RtsSimulationRenderer {
     }
 
     public render(config: RtsRenderConfiguration): void {
-        const terrainView = ErodedTerrainView.build(this.model.staticTerrainConfiguration, this.model.temporaryHoles || [], 10);
+        const terrainView = ErodedTerrainView.build(this.model.staticTerrainConfiguration, this.model.temporaryHoles || [], config.agentRadius);
         const transform = (p: Point2) => config.renderTransform(p);
 
         function renderPolyNode(n: ClipperLib.PolyNode, isHole: boolean) {
             let contour = n.Contour().map(PointConversion.c2b);
-            if (!isHole) {
-                const sc = new SweepContext(contour.map(PointConversion.b2p));
-                n.Childs().forEach(c => sc.addHole(c.Contour().map(PointConversion.c2p)));
-                sc.triangulate();
-
-                const triangles = sc.getTriangles();
-                triangles.forEach((tri: Triangle) => {
-                    const [p1, p2, p3] = tri.getPoints().map(PointConversion.p2b).map(transform).map(PointConversion.b2p);
-                    engine.drawLine('#7F7F7F', p1.x, p1.y, p2.x, p2.y);
-                    engine.drawLine('#7F7F7F', p2.x, p2.y, p3.x, p3.y);
-                    engine.drawLine('#7F7F7F', p3.x, p3.y, p1.x, p1.y);
-                });
-            }
             if (contour.length !== 0) {
                 const transformedContour = contour.map(transform);
                 engine.drawPoly(isHole ? '#FF0000' : '#FFFFFF', transformedContour);
@@ -44,22 +40,73 @@ export class RtsSimulationRenderer {
             n.Childs().forEach(c => renderPolyNode(c, !isHole));
         }
 
-        engine.clear('red');
-        renderPolyNode(terrainView.punchedLand, terrainView.punchedLand.IsHoleNode());
-        terrainView.barriers.forEach(([p1, p2]) => {
-            engine.drawLine('#33FF00', transform(p1), transform(p2));
-        });
-        terrainView.waypoints.forEach(p => {
-            p = transform(p);
-            engine.fillEllipse('#FF0000', p[0] - 5, p[1] - 5, 10, 10);
-        });
-        terrainView.edgesByWaypointIndex.forEach((edges, wi) => {
-            edges.forEach(edge => engine.drawLine(
-                '#00FFFF',
-                transform(terrainView.waypoints[edge.sourceWaypointIndex]),
-                transform(terrainView.waypoints[edge.destinationWaypointIndex])
-            ));
-        });
+        engine.clear();
+
+        if (config.enableRenderPolyTree) {
+            renderPolyNode(terrainView.punchedLand, terrainView.punchedLand.IsHoleNode());
+        }
+
+        if (config.enableRenderWaypoints) {
+            terrainView.waypoints.forEach(p => {
+                p = transform(p);
+                engine.fillEllipse('#FF0000', p[0] - 5, p[1] - 5, 10, 10);
+            });
+        }
+
+        if (config.enableRenderBarriers) {
+            terrainView.barriers.forEach(([p1, p2]) => {
+                engine.drawLine('#33FF00', transform(p1), transform(p2));
+            });
+        }
+
+        if (config.enableRenderVisibilityGraph) {
+            terrainView.edgesByWaypointIndex.forEach((edges, wi) => {
+                edges.forEach(edge => engine.drawLine(
+                    '#00FFFF',
+                    transform(terrainView.waypoints[edge.sourceWaypointIndex]),
+                    transform(terrainView.waypoints[edge.destinationWaypointIndex])
+                ));
+            });
+        }
+
+        if (config.triangulationFillStyle || config.triangulationStrokeStyle) {
+            PolygonOperations.enumerateLandPolyNodes(terrainView.punchedLand).forEach(landPolyNode => {
+                const sc = new SweepContext(landPolyNode.Contour().map(PointConversion.c2p));
+                landPolyNode.Childs().forEach(holePolyNode => {
+                    sc.addHole(holePolyNode.Contour().map(PointConversion.c2p));
+                });
+                try {
+                    sc.triangulate();
+                    sc.getTriangles().map(t => t.getPoints().map(PointConversion.p2b)).forEach(([p1, p2, p3]) => {
+                        if (config.triangulationFillStyle) {
+                            engine.fillPoly(config.triangulationFillStyle, [
+                                transform(p1),
+                                transform(p2),
+                                transform(p3)
+                            ]);
+                        }
+                        if (config.triangulationStrokeStyle) {
+                            engine.drawLine(config.triangulationStrokeStyle, transform(p1), transform(p2));
+                            engine.drawLine(config.triangulationStrokeStyle, transform(p2), transform(p3));
+                            engine.drawLine(config.triangulationStrokeStyle, transform(p3), transform(p1));
+                        }
+                    });
+                } catch (e) {
+                    console.log('p2t error', e);
+                    engine.drawPoly('#FF7C00', landPolyNode.Contour().map(PointConversion.c2b));
+                    console.log(landPolyNode);
+                    throw e;
+                }
+            });
+        }
+
+        if (config.temporaryHoleFillStyle || config.temporaryHoleStrokeStyle) {
+            this.model.temporaryHoles.forEach(hole => {
+                const transformed = hole.map(transform);
+                if (config.temporaryHoleFillStyle) engine.fillPoly(config.temporaryHoleFillStyle, transformed);
+                if (config.temporaryHoleStrokeStyle) engine.drawPoly(config.temporaryHoleStrokeStyle, transformed);
+            });
+        }
 
         const localPathfinder = new LocalPathfinder(terrainView);
         config.pathfindingQueries.forEach(([source, dest]) => {
@@ -67,7 +114,6 @@ export class RtsSimulationRenderer {
             if (!path) {
                 engine.drawLine('#FF0000', transform(source), transform(dest));
             } else {
-                engine.zip(path, path.slice(1), (p1: Point2, p2: Point2) => console.log(p1, p2));
                 engine.zip(path, path.slice(1), (p1: Point2, p2: Point2) => engine.drawLine('#00FF00', transform(p1), transform(p2)));
             }
         });
@@ -97,6 +143,20 @@ export class StaticTerrainConfiguration {
                 PathsCalculator.rect(850, 150, 50, 200),
                 PathsCalculator.rect(600, 350, 300, 50),
                 PathsCalculator.rect(700, 200, 100, 100)
+            ]
+        );
+    }
+
+    static createHorizontalStripes2D(w: number, h: number): StaticTerrainConfiguration {
+        if (w < h) throw new Error('w < h');
+
+        return new StaticTerrainConfiguration(
+            [
+                PathsCalculator.rect(0, 0, w, h)
+            ], [
+                PathsCalculator.rect(h / 7, h / 7, w - 2 * h / 7, h / 7),
+                PathsCalculator.rect(2 * h / 7, 3 * h / 7, w - 4 * h / 7, h / 7),
+                PathsCalculator.rect(h / 7, 5 * h / 7, w - 2 * h / 7, h / 7)
             ]
         );
     }
@@ -315,6 +375,8 @@ export class PunchOperation {
             .erode(baseErosion)
             .dilate(baseErosion)
             .erodeOrDilate(additionalErosionDilation)
+            .erode(baseErosion)
+            .dilate(baseErosion)
             .execute();
     }
 }
@@ -484,3 +546,4 @@ export class ErodedTerrainViewCalculator {
 //        ClipperLib.Paths
     }
 }
+

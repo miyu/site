@@ -1,6 +1,6 @@
 import { IPage } from '../Core';
 import { ColorManager, ColorSchemes } from '../ColorManager';
-import { StaticTerrainConfiguration, RtsRenderConfiguration, RtsSimulationState, RtsSimulationRenderer } from '../Rts/TriangulationView';
+import { PathsCalculator, StaticTerrainConfiguration, RtsRenderConfiguration, RtsSimulationState, RtsSimulationRenderer } from '../Rts/TriangulationView';
 
 import './base.scss';
 import './blog0.scss';
@@ -115,24 +115,63 @@ export class Building2DRtsTerrainEnginePage implements IPage {
 
     mounted(): void {
         this.colorManager.push(ColorSchemes.darkBlueGradientColorScheme);
+        this.handleResize();
     }
 
     tick(dt: number, t: number): void {
     }
 
     render(dt: number, t: number): void {
+        this.renderIntro(dt, t);
+    }
+
+    renderIntro(dt: number, t: number): void {
         const oldContext = engine.swapActiveRenderContext(this.introRenderContext);
-        this.introRenderTarget.width = this.introRenderTarget.clientWidth;
-        this.introRenderTarget.height = this.introRenderTarget.clientHeight;
+
+        const cw = this.introRenderTarget.clientWidth;
+        const ch = this.introRenderTarget.clientHeight;
+        const padding = cw * 0.02;
+        const w = cw - padding * 2;
+        const h = ch - padding * 2;
+        
+        const obstacles: Point2[][] = [];
+        const obstaclesPerSecond = 10;
+        const obstacleMinLifetime = 1;
+        const obstacleMaxLifetime = 5;
+        const tClamped = Math.floor(t * obstaclesPerSecond);
+        for (var tFaked = tClamped - obstacleMaxLifetime * obstaclesPerSecond; tFaked < tClamped; tFaked++) {
+            const rng = new RNG(tFaked.toString());
+            const tDisappears = tFaked + rng.random(obstacleMinLifetime * obstaclesPerSecond, obstacleMaxLifetime * obstaclesPerSecond);
+            if (tDisappears >= tClamped) continue;
+            const sample = (low: number, high: number) => low + rng.uniform() * (high - low);
+            const ow = sample(w / 20, w / 10);
+            const oh = sample(w / 20, w / 10);
+            obstacles.push(PathsCalculator.rect(sample(-padding, w + padding - ow), sample(-padding, h + padding - oh), ow, oh));
+        }
 
         const state = {
-            staticTerrainConfiguration: StaticTerrainConfiguration.createTest2D(),
-            temporaryHoles: []
+            staticTerrainConfiguration: StaticTerrainConfiguration.createHorizontalStripes2D(w, h),
+            temporaryHoles: obstacles
         } as RtsSimulationState;
+
+        const pathfindingQueries: [Point2, Point2][] = [];
+        const nPoints = 8;
+        for (let i = 0; i < nPoints; i++) {
+            const y = h * (0.5 + 4 * i / (nPoints - 1)) / 5;
+            pathfindingQueries.push([[padding, y], [w - padding, y]]);
+        };
+
         const config = {
-            renderTransform: (p: Point2) => engine.add([50, 50], engine.mul(p, 0.8)),
-            pathfindingQueries: []
+            renderTransform: (p: Point2) => engine.add([padding, padding], p),
+            pathfindingQueries,
+            agentRadius: padding / 4,
+            enableRenderPolyTree: true,
+            triangulationFillStyle: 'rgba(255, 255, 255, 0.5)',
+            triangulationStrokeStyle: 'rgba(0, 0, 0, 0.7)',
+            temporaryHoleFillStyle: 'rgba(44, 44, 44, 1)',
+            temporaryHoleStrokeStyle: 'rgba(0, 0, 0, 1)',
         } as RtsRenderConfiguration;
+
         const renderer = new RtsSimulationRenderer(state);
         renderer.render(config);
 
@@ -140,5 +179,7 @@ export class Building2DRtsTerrainEnginePage implements IPage {
     }
 
     handleResize(): void {
+        this.introRenderTarget.width = this.introRenderTarget.clientWidth;
+        this.introRenderTarget.height = this.introRenderTarget.clientHeight;
     }
 }

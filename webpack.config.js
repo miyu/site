@@ -37,6 +37,7 @@ module.exports = {
             { from: 'dependencies/tsJsxSupport.js' },
             { from: 'dependencies/clipper.js' },
             { from: 'dependencies/clipper.min.js' },
+            { from: 'dependencies/rng.js' },
             { from: 'assets', to: 'assets' }
         ])
     ]
