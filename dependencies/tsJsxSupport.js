@@ -6,16 +6,25 @@ window.customJsxVirtualDomFactory = (nodeName, attributes, ...children) => {
 
 function renderVirtualDom(vdom) {
     console.log(vdom);
-    let dom = document.createElement(vdom.nodeName);
+    const dom = document.createElement(vdom.nodeName);
     console.log(dom);
-    let attrs = (vdom.attributes || {});
+    const attrs = (vdom.attributes || {});
     for (let key in attrs) {
         if (attrs.hasOwnProperty(key)) {
-            const resolvedKey =
-                key.toLowerCase() === 'classname'
-                    ? 'class'
-                    : key;
-            dom.setAttribute(resolvedKey, vdom.attributes[key]);
+            if (key === 'style') {
+                const styles = vdom.attributes[key];
+                for (let styleName in styles) {
+                    if (styles.hasOwnProperty(styleName)) {
+                        dom.style[styleName] = styles[styleName];
+                    }
+                }
+            } else {
+                const resolvedKey =
+                    key.toLowerCase() === 'classname'
+                        ? 'class'
+                        : key;
+                dom.setAttribute(resolvedKey, vdom.attributes[key]);
+            }
         }
     }
 

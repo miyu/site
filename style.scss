@@ -9,29 +9,9 @@
 
 body {
     font-family: 'Montserrat', sans-serif;
-    h1 {
+    h1, h2, h3, h4, h5, h6 {
         font-weight: 700;
     }
-}
-
-.blog {
-    min-height: 100vh;
-
-    header, section {
-        section {
-            margin: 0 5vw;
-        }
-    }
-
-    header {
-        margin-top: 15vh;
-
-        h1 {
-            font-size: 2em;
-        }
-    }
-
-
 }
 
 .render-view {
@@ -40,5 +20,5 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    pointer-events: none;
 }

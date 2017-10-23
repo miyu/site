@@ -19,7 +19,7 @@ const demo = new GraphDemo(colorManager);
 
 // Setup Router
 const blogRouter = new Router('blog');
-blogRouter.registerRoute(/^building-2d-rts-terrain-engine/, () => new Building2DRtsTerrainEnginePage());
+blogRouter.registerRoute(/^building-2d-rts-terrain-engine/, () => new Building2DRtsTerrainEnginePage(colorManager));
 
 const router = new Router('');
 router.registerRoute(/^$/, () => new LandingPage(colorManager));
@@ -28,11 +28,12 @@ router.navigateToRoute(window.location.pathname + window.location.search);
 
 let currentlyRenderedPage: IPage = null;
 let currentlyRenderedRoot: HTMLElement = null;
+let nextZIndex = 1;
 
 function main() {
     engine.init(1280, 720, 60);
     engine.displayCanvas.className = 'render-view';
-
+    
     engine.onTickEnter(tick);
     engine.onFrameEnter(render);
 
