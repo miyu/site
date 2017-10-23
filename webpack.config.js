@@ -35,6 +35,8 @@ module.exports = {
             { from: 'index.html' },
             { from: 'dependencies/boilerplate.js' },
             { from: 'dependencies/tsJsxSupport.js' },
+            { from: 'dependencies/clipper.js' },
+            { from: 'dependencies/clipper.min.js' },
             { from: 'assets', to: 'assets' }
         ])
     ]

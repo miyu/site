@@ -1,7 +1,6 @@
-export interface IRoutable {
-}
+export interface IRoutable { }
 
-export interface IPage extends IRoutable {
+export interface IView {
     fetchContentAsync(): Promise<HTMLElement>;
     mounted(): void;
     tick(dt: number, t: number): void;
@@ -9,12 +8,18 @@ export interface IPage extends IRoutable {
     handleResize(): void;
 }
 
-export class BlankPage implements IPage {
+export interface IPage extends IRoutable, IView {
+}
+
+export class BlankView implements IView {
     public fetchContentAsync (): Promise<HTMLElement> { return Promise.resolve(document.createElement('div')); }
     public mounted (): void { }
     public tick (dt: number, t: number): void { }
     public render (dt: number, t: number): void { }
     public handleResize (): void { }
+}
+
+export class BlankPage extends BlankView implements IPage {
 }
 
 export type Route = { pattern: RegExp, routableFactory: () => IRoutable };

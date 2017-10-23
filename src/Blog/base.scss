@@ -42,6 +42,56 @@
         > h1 {
             margin-bottom: 0.3em;
         }
+
+        canvas.inline {
+            margin-left: -3vw;
+            margin-bottom: 0.7em;
+            width: 86vw;
+            box-sizing: border-box;
+        }
+
+        aside {
+            &.inline {
+                margin-left: -1.5vw;
+                margin-bottom: 0.7em;
+                width: 83vw;
+                padding: 1.5vw;
+                box-sizing: border-box;
+
+                h1 {
+                    font-size: 1.25em;
+                    font-weight: 700;
+                    margin-bottom: 0.3em;
+                }
+
+                dl {
+                    dt {
+                        line-height: 1.4em;
+                        margin-top: 0.3em;
+                        font-style: italic;
+                        font-weight: 700;
+                    }
+
+                    dd {
+                        line-height: 1.4em;
+                        font-family: 'Inconsolata', monospace;
+                        margin-left: 0.8em;
+                    }
+                }
+
+                &.warning {
+                    border: 1px solid black;
+                    background: yellow;
+                    color: black;
+                }
+
+                &.algorithm {
+                    border: 1px solid black;
+                    background: lime;
+                    color: black;
+                }
+            }
+        }
     }
 
     p {
@@ -92,51 +142,9 @@
             font-size: 1.5em;
             margin-bottom: 0.3em;
         }
-
-        aside {
-            &.inline {
-                margin-left: -1.5vw;
-                width: 83vw;
-                padding: 1.5vw;
-                box-sizing: border-box;
-
-                h1 {
-                    font-size: 1.25em;
-                    font-weight: 700;
-                    margin-bottom: 0.3em;
-                }
-
-                dl {
-                    dt {
-                        line-height: 1.4em;
-                        margin-top: 0.3em;
-                        font-style: italic;
-                        font-weight: 700;
-                    }
-
-                    dd {
-                        line-height: 1.4em;
-                        font-family: 'Inconsolata', monospace;
-                        margin-left: 0.8em;
-                    }
-                }
-
-                &.warning {
-                    border: 1px solid black;
-                    background: yellow;
-                    color: black;
-                }
-
-                &.algorithm {
-                    border: 1px solid black;
-                    background: lime;
-                    color: black;
-                }
-            }
-        }
     }
 }
 
 .render-view {
-    display: none !important;
+    //display: none !important;
 }

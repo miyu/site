@@ -15,14 +15,14 @@ const { Key: Key } = window;
 const colorManager = new ColorManager(ColorSchemes.blueGradientColorScheme, ColorSchemes.blueGradientColorScheme);
 
 // Setup helper views
-const demo = new GraphDemo(colorManager);
+const graphDemo = new GraphDemo(colorManager);
 
 // Setup Router
 const blogRouter = new Router('blog');
 blogRouter.registerRoute(/^building-2d-rts-terrain-engine/, () => new Building2DRtsTerrainEnginePage(colorManager));
 
 const router = new Router('');
-router.registerRoute(/^$/, () => new LandingPage(colorManager));
+router.registerRoute(/^$/, () => new LandingPage(colorManager, graphDemo));
 router.registerRoute(/^blog/, () => blogRouter);
 router.navigateToRoute(window.location.pathname + window.location.search);
 
@@ -47,7 +47,9 @@ function main() {
             isFirstTick = false;
             firstTick();
         }
-        demo.tick(dt, t);
+        if (currentlyRenderedRoot !== null) {
+            currentlyRenderedPage.tick(dt, t);
+        }
     }
 
     function firstTick() {
@@ -56,7 +58,6 @@ function main() {
 
     function render(dt: number, t: number) {
         colorManager.render(dt);
-        demo.render(dt, t);
 
         if (currentlyRenderedPage !== router.activePage) {
             if (currentlyRenderedRoot) {
@@ -65,6 +66,9 @@ function main() {
             }
             currentlyRenderedPage = router.activePage;
             loadPageContentsAsync(currentlyRenderedPage);
+        }
+        if (currentlyRenderedRoot !== null) {
+            currentlyRenderedPage.render(dt, t);
         }
 
         if (Key.isDown('z')) {

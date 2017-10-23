@@ -11,6 +11,7 @@
         "jsx": "react",
         "jsxFactory": "window.customJsxVirtualDomFactory",
         "lib": [ "dom", "esnext" ],
+        "moduleResolution": "node",
         "typeRoots": [ "./typings" ]
     }
 }

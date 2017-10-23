@@ -5,9 +5,7 @@ window.customJsxVirtualDomFactory = (nodeName, attributes, ...children) => {
 };
 
 function renderVirtualDom(vdom) {
-    console.log(vdom);
     const dom = document.createElement(vdom.nodeName);
-    console.log(dom);
     const attrs = (vdom.attributes || {});
     for (let key in attrs) {
         if (attrs.hasOwnProperty(key)) {

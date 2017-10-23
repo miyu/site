@@ -1,13 +1,14 @@
 
 import { IPage } from '../Core';
 import { ColorManager, ColorSchemes } from '../ColorManager';
+import { GraphDemo } from '../Common/GraphDemo';
 
 import './style.scss';
 
 import Typed from 'typed.js';
 
 export class LandingPage implements IPage {
-    constructor (private colorManager: ColorManager) {}
+    constructor (private colorManager: ColorManager, private graphDemo: GraphDemo) {}
 
     async fetchContentAsync(): Promise<HTMLElement> {
         const resumeLink = <li id="resume-link"><a href='about:blank'>Resume</a></li>;
@@ -76,9 +77,11 @@ export class LandingPage implements IPage {
     }
 
     tick(dt: number, t: number): void {
+        this.graphDemo.tick(dt, t);
     }
 
     render(dt: number, t: number): void {
+        this.graphDemo.render(dt, t);
     }
 
     handleResize(): void {

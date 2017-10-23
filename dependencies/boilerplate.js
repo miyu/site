@@ -187,6 +187,18 @@ function fillEllipse() {
             : Array.apply(null, arguments).slice(1));
 }
 
+function drawPoly(color, points) {
+    global.activeContext.strokeStyle = color;
+    global.activeContext.fillStyle = '';
+    global.activeContext.beginPath();
+    global.activeContext.moveTo(points[0][0], points[0][1]);
+    for (var i = 1; i < points.length; i++) {
+        global.activeContext.lineTo(points[i][0], points[i][1]);
+    }
+    global.activeContext.closePath();
+    global.activeContext.stroke();
+}
+
 function fillPoly(color, points) {
   global.activeContext.strokeStyle = '';
   global.activeContext.fillStyle = color;
@@ -287,6 +299,26 @@ normalize = v => div(v, norm2d(v));
 flip = ([x, y]) => [-x, -y];
 
 within = (val, l, r) => l <= val && val <= r;
+
+
+Clockness = {
+    clockwise: -1,
+    neither: 0,
+    counterClockwise: 1
+}
+
+function clockness() {
+    if (arguments.length === 3) {
+        return clockness(sub(arguments[1], arguments[0]), sub(arguments[1], arguments[2]));
+    } else if (arguments.length === 2) {
+        return clockness(arguments[0][0], arguments[0][1], arguments[1][0], arguments[1][1]);
+    } else if (arguments.length === 6) {
+        return clockness(arguments[2] - arguments[0], arguments[3] - arguments[1], arguments[2] - arguments[4], arguments[3] - arguments[5]);
+    } else if (arguments.length === 4) {
+        return Math.sign(cross([arguments[0], arguments[1]], [arguments[2], arguments[3]]));
+    }
+    throw new Error('Clockness must take 2, 3, 4, or 6 arguments');
+}
 
 // Adapted from miyu/derp
 // NOTE: Assumes segments are valid (two distinct endpoints) NOT line-OVERLAPPING
@@ -481,11 +513,11 @@ function any(arr, pred) {
 }
 
 function zip(a1, a2, zipper) {
-    return a1.map((val, i) => zipper(val, a2[i]));
+    return enumerate(Math.min(a1.length, a2.length)).map(i => zipper(a1[i], a2[i]));
 }
 
 function zip3(a1, a2, a3, zipper) {
-    return a1.map((val, i) => zipper(val, a2[i], a3[i]));
+    return enumerate(Math.min(a1.length, Math.min(a2.length, a3.length))).map(i => zipper(a1[i], a2[i], a3[i]));
 }
 
 function arrayify(val) {
@@ -536,4 +568,12 @@ function computeMeanRenderInterval() {
         return -1;
     }
     return avg(global.measuredRenderIntervals);
+}
+
+// positive dilates, negative erodes
+function offsetSegment(s, offset) {
+    const [a, b] = s;
+    const diff = sub(b, a);
+    const delta = mul(diff, (offset / 2) / norm2d(diff));
+    return [sub(a, delta), add(b, delta)];
 }

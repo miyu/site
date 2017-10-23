@@ -1,20 +1,30 @@
 import { IPage } from '../Core';
 import { ColorManager, ColorSchemes } from '../ColorManager';
+import { StaticTerrainConfiguration, RtsRenderConfiguration, RtsSimulationState, RtsSimulationRenderer } from '../Rts/TriangulationView';
 
 import './base.scss';
+import './blog0.scss';
+
+const engine: BoilerplateEngine = window;
 
 export class Building2DRtsTerrainEnginePage implements IPage {
-    constructor (private colorManager: ColorManager) {}
+    introRenderTarget: HTMLCanvasElement;
+    introRenderContext: CanvasRenderingContext2D;
+
+    constructor(private colorManager: ColorManager) {
+        this.introRenderTarget = <canvas className='inline intro-rt'></canvas> as HTMLCanvasElement;
+        this.introRenderContext = this.introRenderTarget.getContext('2d');
+    }
 
     async fetchContentAsync(): Promise<HTMLElement> {
         return (
-            <article className='blog-article'>
+            <article className='blog-article blog0'>
                 <header id="intro-header">
                     <h1>Building a 2D RTS Terrain Engine</h1>
                     <p>
                         In this article we'll roll our own 2D RTS terrain engine. 
                     </p>
-                    <img src="/assets/rts/VariableRadius.gif" />
+                    {this.introRenderTarget}
                     <p>
                         We'll begin by speccing out our pathfinding engine's functional requirements.
                         Then, we'll talk design and break our larger system into subproblems.
@@ -111,6 +121,22 @@ export class Building2DRtsTerrainEnginePage implements IPage {
     }
 
     render(dt: number, t: number): void {
+        const oldContext = engine.swapActiveRenderContext(this.introRenderContext);
+        this.introRenderTarget.width = this.introRenderTarget.clientWidth;
+        this.introRenderTarget.height = this.introRenderTarget.clientHeight;
+
+        const state = {
+            staticTerrainConfiguration: StaticTerrainConfiguration.createTest2D(),
+            temporaryHoles: []
+        } as RtsSimulationState;
+        const config = {
+            renderTransform: (p: Point2) => engine.add([50, 50], engine.mul(p, 0.8)),
+            pathfindingQueries: []
+        } as RtsRenderConfiguration;
+        const renderer = new RtsSimulationRenderer(state);
+        renderer.render(config);
+
+        engine.swapActiveRenderContext(oldContext);
     }
 
     handleResize(): void {
