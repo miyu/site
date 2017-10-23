@@ -40,6 +40,7 @@ export class RtsSimulationRenderer {
             n.Childs().forEach(c => renderPolyNode(c, !isHole));
         }
 
+
         engine.clear();
 
         if (config.enableRenderPolyTree) {
@@ -55,7 +56,7 @@ export class RtsSimulationRenderer {
 
         if (config.enableRenderBarriers) {
             terrainView.barriers.forEach(([p1, p2]) => {
-                engine.drawLine('#33FF00', transform(p1), transform(p2));
+                engine.drawLine('#FF7F00', transform(p1), transform(p2));
             });
         }
 
@@ -166,7 +167,23 @@ type PathIntermediate = { prior: number, current: number, totalCost: number };
 type PathLink = { priorIndex: number, cheapestCost: number }
 
 function anySegmentIntersects(query: Segment2, segments: Segment2[]) {
-    return engine.any(segments, (s: Segment2) => engine.tryFindSegmentSegmentIntersectionT(query, s) !== null);
+    // inlined for perf: return engine.any(segments, (s: Segment2) => engine.tryFindSegmentSegmentIntersectionT(query, s) !== null);
+    const ax = query[0][0], ay = query[0][1], bx = query[1][0], by = query[1][1];
+    for (let i = 0; i < segments.length; i++) {
+        const cx = segments[i][0][0], cy = segments[i][0][1], dx = segments[i][1][0], dy = segments[i][1][1];
+
+        // http://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect
+        const tl = Math.sign((ax - cx) * (by - cy) - (ay - cy) * (bx - cx));
+        const tr = Math.sign((ax - dx) * (by - dy) - (ay - dy) * (bx - dx));
+        if (tl !== -tr) continue;
+
+        const bl = Math.sign((cx - ax) * (dy - ay) - (cy - ay) * (dx - ax));
+        const br = Math.sign((cx - bx) * (dy - by) - (cy - by) * (dx - bx));
+        if (bl !== -br) continue;
+
+        return true;
+    }
+    return false;
 }
 
 export class LocalPathfinder {
@@ -262,44 +279,66 @@ export class ErodedTerrainView {
     }
 
     public static build(staticTerrainConfiguration: StaticTerrainConfiguration, temporaryHoles: Point2[][], agentRadius: number): ErodedTerrainView {
+        const scale = 1024;
+        const upscale = (p: Point2) => engine.mul(p, scale);
+        const downscale = (p: Point2) => engine.div(p, scale);
+
         const punchedLand = PolygonOperations.punch()
-            .includePaths(staticTerrainConfiguration.landContours.map(c => c.map(PointConversion.b2c)))
-            .excludePaths(staticTerrainConfiguration.holeContours.map(c => c.map(PointConversion.b2c)))
-            .excludePaths(temporaryHoles.map(c => c.map(PointConversion.b2c)))
+            .includePaths(staticTerrainConfiguration.landContours.map(c => c.map(upscale).map(PointConversion.b2c)))
+            .excludePaths(staticTerrainConfiguration.holeContours.map(c => c.map(upscale).map(PointConversion.b2c)))
+            .excludePaths(temporaryHoles.map(c => c.map(upscale).map(PointConversion.b2c)))
             .execute(-agentRadius);
 
-        const barriers = engine.mapMany(
-            PolygonOperations.enumerateLandPolyNodes(punchedLand),
-            ErodedTerrainView.convertLandPolyNodeToBarriers);
+        let barriers = engine
+            .mapMany(
+                PolygonOperations.enumerateLandPolyNodes(punchedLand),
+                ErodedTerrainView.convertLandPolyNodeToBarriers(downscale))
+            .map(b => [b, engine.sqdist(b[0], b[1])])
+            .sort((a, b) => (b[1] as number) - (a[1] as number)) // big segments first
+            .map(val => val[0] as Segment2);
 
         const waypoints = engine.mapMany(
             PolygonOperations.enumeratePolyNodes(punchedLand),
             ErodedTerrainView.convertPolyNodeToWaypoints
-        );
+        ).map(downscale);
 
-        const edgesByWaypointIndex = engine.enumerate(waypoints)
-            .map(([wia, a]) => engine.enumerate(waypoints)
-                .filter(([wib, b]) => wia !== wib && !anySegmentIntersects([a, b], barriers))
-                .map(([wib, b]) => ({
-                    sourceWaypointIndex: wia,
-                    destinationWaypointIndex: wib,
-                    cost: engine.dist(a, b)
-                }))
-            );
+        const edgesByWaypointIndex = waypoints.map(w => []);
+        for (var wia = 0; wia < waypoints.length; wia++) {
+            const a = waypoints[wia];
+            for (var wib = wia + 1; wib < waypoints.length; wib++) {
+                const b = waypoints[wib];
+                if (!anySegmentIntersects([a, b], barriers)) {
+                    const cost = engine.dist(a, b);
+                    edgesByWaypointIndex[wia].push({ sourceWaypointIndex: wia, destinationWaypointIndex: wib, cost });
+                    edgesByWaypointIndex[wib].push({ sourceWaypointIndex: wib, destinationWaypointIndex: wia, cost });
+                }
+            }
+        }
+
+        // Mutate contours to downscale. Note this stores doubles in IntPoints.
+        PolygonOperations.enumeratePolyNodes(punchedLand).forEach(pn => {
+            const contour = pn.Contour();
+            for (let i = 0; i < contour.length; i++) {
+                contour[i] = PointConversion.b2c(downscale(PointConversion.c2b(contour[i])));
+            }
+        });
+
         return new ErodedTerrainView(staticTerrainConfiguration, punchedLand, barriers, waypoints, edgesByWaypointIndex);
     }
 
-    private static convertLandPolyNodeToBarriers(landNode: ClipperLib.PolyNode): Segment2[] {
-        const dilatedNodeAndChildrenPolytree = PolygonOperations.offset()
-            .includePath(landNode.Contour())
-            .includePaths(landNode.Childs().map(c => c.Contour()))
-            .dilate(ErodedTerrainView.kBarrierDilationFactor)
-            .execute();
+    private static convertLandPolyNodeToBarriers(downscale: (p: Point2) => Point2) {
+        return (landNode: ClipperLib.PolyNode): Segment2[] => {
+            const dilatedNodeAndChildrenPolytree = PolygonOperations.offset()
+                .includePath(landNode.Contour())
+                .includePaths(landNode.Childs().map(c => c.Contour()))
+                .dilate(ErodedTerrainView.kBarrierDilationFactor)
+                .execute();
 
-        return engine.mapMany(
-            PolygonOperations.enumeratePolyNodes(dilatedNodeAndChildrenPolytree),
-            PolygonOperations.enumerateContourSegments
-        ).map(s => engine.offsetSegment(s, ErodedTerrainView.kBarrierExpansionFactor));
+            return engine.mapMany(
+                PolygonOperations.enumeratePolyNodes(dilatedNodeAndChildrenPolytree),
+                PolygonOperations.enumerateContourSegments
+            ).map(s => engine.offsetSegment(s, ErodedTerrainView.kBarrierExpansionFactor).map(downscale));
+        }
     }
 
     private static convertPolyNodeToWaypoints(node: ClipperLib.PolyNode): Point2[] {

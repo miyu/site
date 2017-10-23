@@ -59,6 +59,7 @@ function main() {
     function render(dt: number, t: number) {
         colorManager.render(dt);
 
+        engine.clear();
         if (currentlyRenderedPage !== router.activePage) {
             if (currentlyRenderedRoot) {
                 currentlyRenderedRoot.remove();
@@ -71,14 +72,14 @@ function main() {
             currentlyRenderedPage.render(dt, t);
         }
 
-        if (Key.isDown('z')) {
+        if (true || Key.isDown('z')) {
             const ctx = engine.displayCanvas.getContext('2d');
             ctx.fillStyle = colorManager.computeForegroundColor(1);
-            ctx.fillText(`MTE ${1000 * engine.computeMeanTickExecutionTime()}ms`, 0, 0);
-            ctx.fillText(`MRE ${1000 * engine.computeMeanRenderExecutionTime()}ms `, 0, 10);
-            ctx.fillText(`MRI ${1000 * engine.computeMeanRenderInterval()}ms`, 0, 20);
-            ctx.fillText(`FPS ~${1 / engine.computeMeanRenderInterval()}`, 0, 30);
-            ctx.fillText(`RES ${engine.getScreenRect().width} x ${engine.getScreenRect().height}`, 0, 40);
+            ctx.fillText(`MTE ${1000 * engine.computeMeanTickExecutionTime()}ms`, 0, 10);
+            ctx.fillText(`MRE ${1000 * engine.computeMeanRenderExecutionTime()}ms `, 0, 20);
+            ctx.fillText(`MRI ${1000 * engine.computeMeanRenderInterval()}ms`, 0, 30);
+            ctx.fillText(`FPS ~${1 / engine.computeMeanRenderInterval()}`, 0, 40);
+            ctx.fillText(`RES ${engine.getScreenRect().width} x ${engine.getScreenRect().height}`, 0, 50);
         }
     }
 
@@ -96,6 +97,10 @@ function main() {
 //        engine.activeContext.imageSmoothingEnabled = false;
 
         colorManager.handleResize();
+
+        if (currentlyRenderedRoot !== null) {
+            currentlyRenderedPage.handleResize();
+        }
     }
 }
 

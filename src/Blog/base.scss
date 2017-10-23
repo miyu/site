@@ -25,12 +25,42 @@
         white-space: nowrap;
     }
 
+    > header {
+        padding-top: 5vw;
+
+        h1 {
+            font-size: 3em;
+        }
+
+        > section > h1 {
+            font-size: 2em;
+        }
+    }
+
+    > section {
+        margin-top: 1.5em;
+
+        h1 {
+            font-size: 2em;
+            margin-top: 0.7em;
+        }
+
+        > section {
+            margin-bottom: 0.7em;
+
+            > h1 {
+                font-size: 1.5em;
+                margin-top: 0.7em;
+                margin-bottom: 0.3em;
+            }
+        }
+    }
+
     > header,
     > section {
         text-align: left;
         margin: 0 auto;
         width: 80vw;
-        // border: 2px solid rgba(0, 0, 0, 1);
 
         > img {
             margin-left: -3vw;
@@ -41,6 +71,12 @@
 
         > h1 {
             margin-bottom: 0.3em;
+        }
+
+        > h2 {
+            font-size: 1.5em;
+            margin-top: 1em;
+            margin-bottom: 0em;
         }
 
         canvas.inline {
@@ -90,6 +126,72 @@
                     background: lime;
                     color: black;
                 }
+
+                &.emphasis {
+                    border: 1px solid black;
+                    background: white;
+                    color: black;
+                }
+            }
+        }
+    }
+
+    header, section {
+        > ol, > ul {
+            margin-left: 2em;
+            margin-top: 0.7em;
+            margin-bottom: 0.7em;
+            line-height: 1.4em;
+
+            ol, ul {
+                margin-left: 2em;
+            }
+
+            dl {
+                > dt {
+                    display: inline;
+
+                    &:after {
+                        display: inline;
+                        content: ': ';
+                    }
+                }
+
+                > dd {
+                    display: inline;
+                }
+            }
+        }
+
+        > ol {
+            > li {
+                list-style-type: decimal;
+            }
+
+            &.table-of-contents > li {
+                list-style-type: upper-roman;
+            }
+
+            > li > ol > li {
+                list-style-type: lower-alpha;
+            }
+        }
+
+        ul > li {
+            &:before {
+                display: inline;
+                content: "-";
+                margin-right: 1em;
+            }
+        }
+
+        > table {
+            width: 100%;
+            margin: 0.7em 1em;
+            line-height: 1.4em;
+
+            thead {
+                text-decoration: underline;
             }
         }
     }
@@ -100,48 +202,6 @@
         }
 
         line-height: 1.4em;
-    }
-
-    ol, ul {
-        margin: 0.7em 2em;
-        line-height: 1.4em;
-    }
-
-    ol > li {
-        list-style-type: decimal;
-    }
-
-    ul > li {
-        &:before {
-            display: inline;
-            content: "-";
-            margin-right: 1em;
-        }
-    }
-
-    > header {
-        padding-top: 5vw;
-
-        h1 {
-            font-size: 3em;
-        }
-
-        > section > h1 {
-            font-size: 2em;
-        }
-    }
-
-    > section {
-        margin-top: 1.5em;
-
-        h1 {
-            font-size: 2em;
-        }
-
-        > section > h1 {
-            font-size: 1.5em;
-            margin-bottom: 0.3em;
-        }
     }
 }
 
