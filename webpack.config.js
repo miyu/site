@@ -33,6 +33,7 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin([
             { from: 'index.html' },
+            { from: '404.html' },
             { from: 'dependencies/boilerplate.js' },
             { from: 'dependencies/tsJsxSupport.js' },
             { from: 'dependencies/clipper.js' },
