@@ -4315,7 +4315,7 @@ const colorManager = new __WEBPACK_IMPORTED_MODULE_0__ColorManager__["a" /* Colo
 const graphDemo = new __WEBPACK_IMPORTED_MODULE_2__Common_GraphDemo__["a" /* GraphDemo */](colorManager);
 const blogRouter = new __WEBPACK_IMPORTED_MODULE_1__Core__["a" /* Router */]('blog');
 blogRouter.registerRoute(/^building-2d-rts-terrain-engine/, () => new __WEBPACK_IMPORTED_MODULE_4__Blog_Building2DRtsTerrainEnginePage__["a" /* Building2DRtsTerrainEnginePage */](colorManager));
-const router = new __WEBPACK_IMPORTED_MODULE_1__Core__["a" /* Router */]('');
+const router = new __WEBPACK_IMPORTED_MODULE_1__Core__["a" /* Router */]('site');
 router.registerRoute(/^$/, () => new __WEBPACK_IMPORTED_MODULE_3__Landing_LandingPage__["a" /* LandingPage */](colorManager, graphDemo));
 router.registerRoute(/^blog/, () => blogRouter);
 router.navigateToRoute(window.location.pathname + window.location.search);
