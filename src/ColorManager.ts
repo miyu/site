@@ -47,14 +47,16 @@ export class ColorManager {
             : this.currentColorScheme.compute(1 - this.t / this.s[0].interval) + ', ' + this.s[0].scheme.compute(1);;
         let foregroundColor = this.computeForegroundColor(1);
 
+        // backgroundColor = "black";
         if (backgroundColor !== this.lastBackgroundColor) {
-            window.document.body.style.background = backgroundColor;
+            console.log("bg", backgroundColor);
+            //window.document.body.style.background = backgroundColor;
             this.lastBackgroundColor = backgroundColor;
         }
         if (foregroundColor !== this.lastForegroundColor) {
             console.log(foregroundColor);
 
-            window.document.body.style.color = foregroundColor;
+            //window.document.body.style.color = foregroundColor;
             this.lastForegroundColor = foregroundColor;
         }
     }
@@ -68,6 +70,13 @@ export class ColorManager {
     }
 
     push(bg: ColorScheme, thres?: number) {
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        const isIE = /*@cc_on!@*/false || !!(document as any).documentMode;
+        const isEdge = !isIE && !!(window as any).StyleMedia;
+        if (!isChrome && !isEdge) {
+            bg = ColorSchemes.whiteColorScheme;
+        }
+
         bg = bg || this.defaultColorScheme;
         if (this.s.length === 0) {
             this.t = 0;

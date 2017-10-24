@@ -53,6 +53,14 @@ export class GraphDemo {
     }
 
     render(dt: number, t: number) {
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        const isIE = /*@cc_on!@*/false || !!(document as any).documentMode;
+        const isEdge = !isIE && !!(window as any).StyleMedia;
+        if (!isChrome && !isEdge) {
+            e.clear();
+            return;
+        }
+
         if (Key.isDown('r') && (t % 0.7) < 0.1) this.resetPoints();
 
         const screenRect = e.getScreenRect();
@@ -120,7 +128,7 @@ export class GraphDemo {
                 e.add(p2, perp2)
             ];
 
-            
+
             const stroke = e.createLinearGradient(p1, p2, this.colorManager.computeForegroundColor(alphas[i] * 2), this.colorManager.computeForegroundColor(alphas[j] * 2));
             e.fillPoly(stroke, poly);
 //            e.drawLine(stroke, p1, p2);
