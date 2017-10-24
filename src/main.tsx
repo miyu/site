@@ -74,14 +74,16 @@ function main() {
             currentlyRenderedPage.render(dt, t);
         }
 
-        if (true || Key.isDown('z')) {
+        if (window.location.search.includes('debug') || Key.isDown('z')) {
+            const formatDecimal = (x: number) => x.toFixed(2);
             const ctx = engine.displayCanvas.getContext('2d');
             ctx.fillStyle = colorManager.computeForegroundColor(1);
-            ctx.fillText(`MTE ${1000 * engine.computeMeanTickExecutionTime()}ms`, 0, 10);
-            ctx.fillText(`MRE ${1000 * engine.computeMeanRenderExecutionTime()}ms `, 0, 20);
-            ctx.fillText(`MRI ${1000 * engine.computeMeanRenderInterval()}ms`, 0, 30);
-            ctx.fillText(`FPS ~${1 / engine.computeMeanRenderInterval()}`, 0, 40);
-            ctx.fillText(`RES ${engine.getScreenRect().width} x ${engine.getScreenRect().height}`, 0, 50);
+            let stats = `MTE ${formatDecimal(1000 * engine.computeMeanTickExecutionTime())}ms`;
+            stats += ` | MRE ${formatDecimal(1000 * engine.computeMeanRenderExecutionTime())}ms `;
+            stats += ` | MRI ${formatDecimal(1000 * engine.computeMeanRenderInterval())}ms`;
+            stats += ` | FPS ~${formatDecimal(1 / engine.computeMeanRenderInterval())}`;
+            stats += ` | RES ${engine.getScreenRect().width} x ${engine.getScreenRect().height}`;
+            ctx.fillText(stats, 0, 10);
         }
     }
 

@@ -22,7 +22,8 @@ export class Building2DRtsTerrainEnginePage implements IPage {
             <article className='blog-article blog0'>
                 <header id="intro-header">
                     <aside className='inline warning'>
-                        Note: This blog is heavily a work-in-progress and incomplete.
+                        <p>Note: This blog is heavily a work-in-progress and incomplete.</p>
+                        <p>It also fills your browser width, so make the window smaller if words are too big :P</p>
                     </aside>
                     <h1>Building a 2D RTS Terrain Engine</h1>
                     <p>

@@ -52,6 +52,7 @@ $introFontSize: 0.8vw;
             margin: 0 -0.2em;
             padding: 0 0.2em;
             opacity: 0.9;
+            color: inherit !important;
 
             &:hover {
                 //border-bottom: solid 0.1em;
@@ -67,10 +68,6 @@ $introFontSize: 0.8vw;
                     height: 0.1em;
                     background-color: currentColor;
                 }
-            }
-
-            &:visited {
-                color: inherit;
             }
         }
     }
@@ -135,7 +132,7 @@ $introFontSize: 0.8vw;
 
             &:before {
                 display: inline;
-                content: 'Visualized:';
+                content: 'Visualized: ';
             }
         }
     }

@@ -11,9 +11,9 @@ export class LandingPage implements IPage {
     constructor (private colorManager: ColorManager, private graphDemo: GraphDemo) {}
 
     async fetchContentAsync(): Promise<HTMLElement> {
-        const resumeLink = <li id="resume-link"><a href='about:blank'>Resume</a></li>;
-        const githubLink = <li id="github-link"><a href='about:blank'>GitHub</a></li>;
-        const linkedinLink = <li id="linkedin-link"><a href='about:blank'>LinkedIn</a></li>;
+        const resumeLink = <li id="resume-link"><a href='https://miyu.github.io/resume'>Resume</a></li>;
+        const githubLink = <li id="github-link"><a href='https://www.github.com/miyu'>GitHub</a></li>;
+        const linkedinLink = <li id="linkedin-link"><a href='https://www.linkedin.com/in/warty'>LinkedIn</a></li>;
 
         resumeLink.addEventListener('mouseover', () => this.colorManager.push(ColorSchemes.purpleGradientColorScheme));
         resumeLink.addEventListener('mouseleave', () => this.colorManager.push(null));
@@ -28,16 +28,16 @@ export class LandingPage implements IPage {
             <nav className="blog-post-list">
                 <h1>Blogs</h1>
                 <ul>
-                    <li><a href='about:blank'>Building an RTS Terrain Engine from Scratch</a></li>
-                    <li><a href='about:blank'>Character Detection in League of Legends Artwork</a></li>
-                    <li><a href='about:blank'>See More &raquo;</a></li>
+                    <li><a href='/blog/building-2d-rts-terrain-engine'>Building an RTS Terrain Engine from Scratch (WIP)</a></li>
+                    <li><a href='http://www.itzwarty.com/character-detection-in-league-of-legends-artwork/'>Character Detection in League of Legends Artwork</a></li>
+                    <li><a href='http://www.itzwarty.com/'>See More &raquo;</a></li>
                 </ul>
             </nav>
         );
 
         blogPostList.addEventListener('mouseover', () => this.colorManager.push(ColorSchemes.whiteColorScheme));
         blogPostList.addEventListener('mouseleave', () => this.colorManager.push(null));
-
+        // &#x25BE;
         return (
             <section className='intro'>
                 <header id="intro-header">
@@ -53,7 +53,7 @@ export class LandingPage implements IPage {
                 </header>
                 {blogPostList}
                 <aside>
-                    Point Cloud Convex Hull &#x25BE;
+                    Point Cloud Convex Hull
                 </aside>
             </section>
         );
