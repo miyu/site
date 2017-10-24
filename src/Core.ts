@@ -38,10 +38,10 @@ export class Router implements IRoutable {
     resolve(url: string): Route {
         let lastUrl = url;
         while (true) {
+            while (this.baseUrl && url.startsWith(this.baseUrl)) url = url.substring(this.baseUrl.length);
             while (url.startsWith('/')) url = url.substring(1);
-            if (url.startsWith(this.baseUrl)) {
-                url = url.replace(this.baseUrl, '');
-            }
+            while (this.baseUrl && url.startsWith(this.baseUrl)) url = url.substring(this.baseUrl.length);
+
             if (url === lastUrl) break;
             lastUrl = url;
         }

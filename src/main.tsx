@@ -18,10 +18,12 @@ const colorManager = new ColorManager(ColorSchemes.blueGradientColorScheme, Colo
 const graphDemo = new GraphDemo(colorManager);
 
 // Setup Router
-const blogRouter = new Router('blog');
+const routePrefix: string = (window as any).globalRoutePrefix;
+
+const blogRouter = new Router(`${routePrefix}/blog`);
 blogRouter.registerRoute(/^building-2d-rts-terrain-engine/, () => new Building2DRtsTerrainEnginePage(colorManager));
 
-const router = new Router('');
+const router = new Router(`${routePrefix}`);
 router.registerRoute(/^$/, () => new LandingPage(colorManager, graphDemo));
 router.registerRoute(/^blog/, () => blogRouter);
 router.navigateToRoute(window.location.pathname + window.location.search);

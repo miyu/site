@@ -187,11 +187,42 @@
 
         > table {
             width: 100%;
+            max-width: 75vw;
             margin: 0.7em 1em;
             line-height: 1.4em;
 
             thead {
                 text-decoration: underline;
+            }
+
+            &.half-split {
+                tr, thead {
+                    td {
+                        width: 50%;
+                        position: relative;
+                    }
+
+                    td:first-child {
+                        border-right: 0.7em solid transparent;
+                    }
+
+                    .img-wrap {
+                        img {
+                            display: block;
+                            width: 100%;
+                        }
+
+                        &.contain {
+                            img {
+                                position: absolute;
+                                left: 0;
+                                right: 0;
+                                height: 100%;
+                                object-fit: cover;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
