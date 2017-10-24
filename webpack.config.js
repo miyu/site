@@ -41,5 +41,9 @@ module.exports = {
             { from: 'dependencies/rng.js' },
             { from: 'assets', to: 'assets' }
         ])
-    ]
+    ],
+    devServer: {
+	host: "miyu.dev",
+	port: 80
+    }
 };
