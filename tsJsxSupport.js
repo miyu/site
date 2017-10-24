@@ -16,6 +16,13 @@ function renderVirtualDom(vdom) {
                         dom.style[styleName] = styles[styleName];
                     }
                 }
+            } if (key === 'src') {
+                let src = vdom.attributes[key];
+
+                if (src.toLowerCase().startsWith('/')) {
+                    src = window.globalRoutePrefix + src;
+                }
+                dom.setAttribute(key, src);
             } else {
                 const resolvedKey =
                     key.toLowerCase() === 'classname'

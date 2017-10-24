@@ -189,6 +189,7 @@ function fillEllipse() {
 
 function drawPoly(color, points) {
     global.activeContext.strokeStyle = color;
+    global.activeContext.lineWidth = 1;
     global.activeContext.fillStyle = '';
     global.activeContext.beginPath();
     global.activeContext.moveTo(points[0][0], points[0][1]);
@@ -216,6 +217,7 @@ function drawLine() {
     const src = arguments.length == 3 ? arguments[1] : Array.apply(null, arguments).slice(1, 3);
     const dst = arguments.length == 3 ? arguments[2] : Array.apply(null, arguments).slice(3, 5);
     global.activeContext.strokeStyle = arguments[0];
+    global.activeContext.lineWidth = 1;
     global.activeContext.beginPath();
     global.activeContext.moveTo.apply(global.activeContext, src);
     global.activeContext.lineTo.apply(global.activeContext, dst);
@@ -324,30 +326,17 @@ function clockness() {
 // NOTE: Assumes segments are valid (two distinct endpoints) NOT line-OVERLAPPING
 // that is, segments should not have more than 1 point of intersection.
 // if segments DO have more than 1 point of intersection, this returns no intersection found.
-function tryFindSegmentSegmentIntersectionT(a, b) {
-    // via http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-    var p = a[0];
-    var r = sub(a[1], a[0])
-    var q = b[0];
-    var s = sub(b[1], b[0]);
+function tryFindSegmentSegmentIntersectionT(s1, s2) {
+    const ax = s1[0][0], ay = s1[0][1], bx = s1[1][0], by = s1[1][1];
+    const cx = s2[0][0], cy = s2[0][1], dx = s2[1][0], dy = s2[1][1];
 
-    var rxs = cross(r, s);
-    if (rxs == 0) {
-        return null;
-    }
+    // http://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect
+    const tl = Math.sign((ax - cx) * (by - cy) - (ay - cy) * (bx - cx));
+    const tr = Math.sign((ax - dx) * (by - dy) - (ay - dy) * (bx - dx));
+    const bl = Math.sign((cx - ax) * (dy - ay) - (cy - ay) * (dx - ax));
+    const br = Math.sign((cx - bx) * (dy - by) - (cy - by) * (dx - bx));
 
-    var qmp = sub(q, p);
-    var t = cross(qmp, s) / rxs;
-    if (t < 0.0 || t > 1.0) {
-        return null;
-    }
-
-    var u = cross(qmp, r) / rxs;
-    if (u < 0.0 || u > 1.0) {
-        return null;
-    }
-
-    return t;
+    return tl === -tr && bl === -br;
 }
 
 function tryFindSegmentSegmentIntersection(a, b) {

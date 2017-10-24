@@ -33,13 +33,20 @@
   </script>
   <!-- End Single Page Apps for GitHub Pages -->
   
+  <script>
+    var includes = ['/tsJsxSupport.js', '/boilerplate.js', '/clipper.js', '/rng.js', '/bundle.js'];
+    var loc = window.location.href.toLowerCase();
+    var isGithubSite = loc.includes('github.io') && loc.includes('site');
+    var prefix = window.globalRoutePrefix = isGithubSite ? '/site' : '';
+    includes.forEach(inc => {
+      var script = document.createElement('script');
+      script.src = prefix + inc;
+      document.head.appendChild(script);
+    });
+  </script>
 
-  <script src="https://miyu.github.io/site/tsJsxSupport.js"></script>
-  <script src="https://miyu.github.io/site/boilerplate.js"></script>
-  <script src="https://miyu.github.io/site/clipper.js"></script>
-  <script src="https://miyu.github.io/site/rng.js"></script>
-  <script src="https://miyu.github.io/site/bundle.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
 </head>
 <body>
 </body>
