@@ -60,6 +60,8 @@ export class LandingPage implements IPage {
     }
 
     mounted() {
+        window.document.title = "Michael Yu - Software Engineer";
+
         const throwaway = new Typed('.whoami', {
             strings: [
                 'Software Engineer',

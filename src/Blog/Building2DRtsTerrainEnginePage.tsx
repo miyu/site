@@ -221,6 +221,8 @@ export class Building2DRtsTerrainEnginePage implements IPage {
     }
 
     mounted(): void {
+        window.document.title = 'Building a 2D Rts Terrain Engine';
+
         this.colorManager.push(ColorSchemes.whiteColorScheme);
         this.handleResize();
     }
