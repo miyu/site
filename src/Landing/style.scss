@@ -93,14 +93,11 @@ $introFontSize: 0.8vw;
         a {
             opacity: 0.7;
             text-decoration: none;
+            color: inherit !important;
 
             &:hover {
                 opacity: 0.9;
                 text-decoration: underline;
-            }
-
-            &:visited {
-                color: inherit;
             }
         }
     }
