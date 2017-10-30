@@ -50,13 +50,13 @@ export class ColorManager {
         // backgroundColor = "black";
         if (backgroundColor !== this.lastBackgroundColor) {
             console.log("bg", backgroundColor);
-            //window.document.body.style.background = backgroundColor;
+            window.document.body.style.background = backgroundColor;
             this.lastBackgroundColor = backgroundColor;
         }
         if (foregroundColor !== this.lastForegroundColor) {
             console.log(foregroundColor);
 
-            //window.document.body.style.color = foregroundColor;
+            window.document.body.style.color = foregroundColor;
             this.lastForegroundColor = foregroundColor;
         }
     }
